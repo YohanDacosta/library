@@ -1,5 +1,6 @@
 
 ###> symfony/framework-bundle ###
+uml.png
 /.env.local
 /.env.local.php
 /.env.*.local
