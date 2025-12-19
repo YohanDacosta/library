@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CourseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -19,9 +21,18 @@ class Course
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'course')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Tutor $tutor = null;
+    /**
+     * @var Collection<int, Tutor>
+     */
+    #[ORM\ManyToMany(targetEntity: Tutor::class, mappedBy: 'courses')]
+    private Collection $tutors;
+
+    public function __construct()
+    {
+        $this->id = Uuid::v4();
+        $this->created_at = new \DateTimeImmutable();
+        $this->tutors = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -52,14 +63,29 @@ class Course
         return $this;
     }
 
-    public function getTutor(): ?Tutor
+    /**
+     * @return Collection<int, Tutor>
+     */
+    public function getTutors(): Collection
     {
-        return $this->tutor;
+        return $this->tutors;
     }
 
-    public function setTutor(?Tutor $tutor): static
+    public function addTutor(Tutor $tutor): static
     {
-        $this->tutor = $tutor;
+        if (!$this->tutors->contains($tutor)) {
+            $this->tutors->add($tutor);
+            $tutor->addCourses($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTutor(Tutor $tutor): static
+    {
+        if ($this->tutors->removeElement($tutor)) {
+            $tutor->removeCourses($this);
+        }
 
         return $this;
     }
