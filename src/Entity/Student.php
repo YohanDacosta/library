@@ -36,6 +36,12 @@ class Student
     #[ORM\JoinColumn(nullable: false)]
     private ?School $school = null;
 
+    public function __construct()
+    {
+        $this->id = Uuid::v4();
+        $this->created_at = new \DateTimeImmutable();
+    }
+
     public function getId(): ?Uuid
     {
         return $this->id;

@@ -31,21 +31,24 @@ class Tutor
     private ?\DateTimeImmutable $updated_at = null;
 
     /**
-     * @var Collection<int, Course>
-     */
-    #[ORM\OneToMany(targetEntity: Course::class, mappedBy: 'tutor')]
-    private Collection $course;
-
-    /**
      * @var Collection<int, School>
      */
-    #[ORM\OneToMany(targetEntity: School::class, mappedBy: 'tutor')]
-    private Collection $school;
+    #[ORM\ManyToMany(targetEntity: School::class, inversedBy: 'tutors')]
+    private Collection $schools;
+
+    /**
+     * @var Collection<int, Course>
+     */
+    #[ORM\ManyToMany(targetEntity: Course::class, inversedBy: 'tutors')]
+    private Collection $courses;
 
     public function __construct()
     {
-        $this->course = new ArrayCollection();
-        $this->school = new ArrayCollection();
+        $this->id = Uuid::v4();
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+        $this->schools = new ArrayCollection();
+        $this->courses = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -114,48 +117,17 @@ class Tutor
     }
 
     /**
-     * @return Collection<int, Course>
-     */
-    public function getCourse(): Collection
-    {
-        return $this->course;
-    }
-
-    public function addCourse(Course $course): static
-    {
-        if (!$this->course->contains($course)) {
-            $this->course->add($course);
-            $course->setTutor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCourse(Course $course): static
-    {
-        if ($this->course->removeElement($course)) {
-            // set the owning side to null (unless already changed)
-            if ($course->getTutor() === $this) {
-                $course->setTutor(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, School>
      */
-    public function getSchool(): Collection
+    public function getSchools(): Collection
     {
-        return $this->school;
+        return $this->schools;
     }
 
     public function addSchool(School $school): static
     {
-        if (!$this->school->contains($school)) {
-            $this->school->add($school);
-            $school->setTutor($this);
+        if (!$this->schools->contains($school)) {
+            $this->schools->add($school);
         }
 
         return $this;
@@ -163,12 +135,31 @@ class Tutor
 
     public function removeSchool(School $school): static
     {
-        if ($this->school->removeElement($school)) {
-            // set the owning side to null (unless already changed)
-            if ($school->getTutor() === $this) {
-                $school->setTutor(null);
-            }
+        $this->schools->removeElement($school);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Course>
+     */
+    public function getCourses(): Collection
+    {
+        return $this->courses;
+    }
+
+    public function addCourse(Course $course): static
+    {
+        if (!$this->courses->contains($course)) {
+            $this->courses->add($course);
         }
+
+        return $this;
+    }
+
+    public function removeCourse(Course $course): static
+    {
+        $this->courses->removeElement($course);
 
         return $this;
     }
