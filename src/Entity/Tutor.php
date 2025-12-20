@@ -42,6 +42,12 @@ class Tutor
     #[ORM\ManyToMany(targetEntity: Course::class, inversedBy: 'tutors')]
     private Collection $courses;
 
+    /**
+     * @var Collection<int, Loan>
+     */
+    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'tutor')]
+    private Collection $loan;
+
     public function __construct()
     {
         $this->id = Uuid::v4();
@@ -49,6 +55,7 @@ class Tutor
         $this->updated_at = new \DateTimeImmutable();
         $this->schools = new ArrayCollection();
         $this->courses = new ArrayCollection();
+        $this->loan = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -160,6 +167,36 @@ class Tutor
     public function removeCourse(Course $course): static
     {
         $this->courses->removeElement($course);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Loan>
+     */
+    public function getLoan(): Collection
+    {
+        return $this->loan;
+    }
+
+    public function addLoan(Loan $loan): static
+    {
+        if (!$this->loan->contains($loan)) {
+            $this->loan->add($loan);
+            $loan->setTutor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLoan(Loan $loan): static
+    {
+        if ($this->loan->removeElement($loan)) {
+            // set the owning side to null (unless already changed)
+            if ($loan->getTutor() === $this) {
+                $loan->setTutor(null);
+            }
+        }
 
         return $this;
     }

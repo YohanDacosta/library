@@ -46,12 +46,19 @@ class Book
     #[ORM\ManyToMany(targetEntity: BookCategory::class, inversedBy: 'books')]
     private Collection $categories;
 
+    /**
+     * @var Collection<int, Loan>
+     */
+    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'book')]
+    private Collection $loan;
+
     public function __construct()
     {
         $this->id = Uuid::v4();
         $this->created_at = new \DateTimeImmutable();
         $this->status = BookStatusEnum::AVAILABLE;
         $this->categories = new ArrayCollection();
+        $this->loan = new ArrayCollection();
     }
 
     public function getId(): Uuid|null
@@ -175,6 +182,36 @@ class Book
     public function removeCategory(BookCategory $category): static
     {
         $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Loan>
+     */
+    public function getLoan(): Collection
+    {
+        return $this->loan;
+    }
+
+    public function addLoan(Loan $loan): static
+    {
+        if (!$this->loan->contains($loan)) {
+            $this->loan->add($loan);
+            $loan->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLoan(Loan $loan): static
+    {
+        if ($this->loan->removeElement($loan)) {
+            // set the owning side to null (unless already changed)
+            if ($loan->getBook() === $this) {
+                $loan->setBook(null);
+            }
+        }
 
         return $this;
     }
