@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\StudentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -36,10 +38,17 @@ class Student
     #[ORM\JoinColumn(nullable: false)]
     private ?School $school = null;
 
+    /**
+     * @var Collection<int, Loan>
+     */
+    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'student')]
+    private Collection $loan;
+
     public function __construct()
     {
         $this->id = Uuid::v4();
         $this->created_at = new \DateTimeImmutable();
+        $this->loan = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -127,6 +136,36 @@ class Student
     public function setSchool(School $school): static
     {
         $this->school = $school;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Loan>
+     */
+    public function getLoan(): Collection
+    {
+        return $this->loan;
+    }
+
+    public function addLoan(Loan $loan): static
+    {
+        if (!$this->loan->contains($loan)) {
+            $this->loan->add($loan);
+            $loan->setStudent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLoan(Loan $loan): static
+    {
+        if ($this->loan->removeElement($loan)) {
+            // set the owning side to null (unless already changed)
+            if ($loan->getStudent() === $this) {
+                $loan->setStudent(null);
+            }
+        }
 
         return $this;
     }
