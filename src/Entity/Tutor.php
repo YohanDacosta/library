@@ -198,6 +198,10 @@ class Tutor
             }
         }
 
-        return $this;
+            return $this;
+    }
+
+    public function removeCourses(Course $param)
+    {
     }
 }
