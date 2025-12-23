@@ -5,11 +5,13 @@ namespace App\Entity;
 use App\Enums\BookStatusEnum;
 use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
+#[UniqueEntity('code', message: 'Code already exists.')]
 class Book
 {
     #[ORM\Id]
@@ -28,11 +30,8 @@ class Book
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $isbn = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $code = null;
-
-    #[ORM\Column]
-    private ?int $copies_available = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -56,9 +55,9 @@ class Book
     {
         $this->id = Uuid::v4();
         $this->created_at = new \DateTimeImmutable();
-        $this->status = BookStatusEnum::AVAILABLE;
         $this->categories = new ArrayCollection();
         $this->loan = new ArrayCollection();
+        $this->code = $this->getId();
     }
 
     public function getId(): Uuid|null
@@ -122,18 +121,6 @@ class Book
     public function setCode(string $code): static
     {
         $this->code = $code;
-
-        return $this;
-    }
-
-    public function getCopiesAvailable(): ?int
-    {
-        return $this->copies_available;
-    }
-
-    public function setCopiesAvailable(int $copies_available): static
-    {
-        $this->copies_available = $copies_available;
 
         return $this;
     }
