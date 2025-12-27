@@ -5,8 +5,10 @@ namespace App\Controller\Admin;
 use App\Entity\Book;
 use App\Entity\BookCategory;
 use App\Entity\Course;
+use App\Entity\Loan;
 use App\Entity\School;
 use App\Entity\Student;
+use App\Entity\Tutor;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -53,5 +55,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Students', 'fas fa-graduation-cap', Student::class);
         yield MenuItem::linkToCrud('Courses', 'fas fa-file', Course::class);
         yield MenuItem::linkToCrud('Schools', 'fas fa-school', School::class);
+        yield MenuItem::linkToCrud('Loans', 'fa fa-clock-o', Loan::class);
+        yield MenuItem::linkToCrud('Tutors', 'fa fa-users', Tutor::class);
     }
 }

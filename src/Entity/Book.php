@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enums\BookStatusEnum;
 use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Random\RandomException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,13 +52,16 @@ class Book
     #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'book')]
     private Collection $loan;
 
+    /**
+     * @throws RandomException
+     */
     public function __construct()
     {
         $this->id = Uuid::v4();
         $this->created_at = new \DateTimeImmutable();
         $this->categories = new ArrayCollection();
         $this->loan = new ArrayCollection();
-        $this->code = $this->getId();
+        $this->code = time() . random_int(100, 999);
     }
 
     public function getId(): Uuid|null
@@ -201,5 +205,10 @@ class Book
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->title ?? '';
     }
 }
