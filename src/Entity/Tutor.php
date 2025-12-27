@@ -204,4 +204,9 @@ class Tutor
     public function removeCourses(Course $param)
     {
     }
+
+    public function __toString(): string
+    {
+        return $this->first_name . ' ' . $this->last_name ?? '';
+    }
 }

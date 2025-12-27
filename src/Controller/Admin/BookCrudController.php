@@ -17,9 +17,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use Picqer\Barcode\Exceptions\BarcodeException;
 use Picqer\Barcode\Exceptions\InvalidCharacterException;
 use Picqer\Barcode\Renderers\PngRenderer;
+use Picqer\Barcode\Types\TypeCode128;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Picqer\Barcode\Types\TypeCodabar;
 
 class BookCrudController extends AbstractCrudController
 {
@@ -30,14 +30,14 @@ class BookCrudController extends AbstractCrudController
     #[Route(path: '/barcode', name: 'download_barcode')]
     public function downloadBarcode($code): Response
     {
-        $barcode = (new TypeCodabar())->getBarcode('22222');
+        $barcode = (new TypeCode128())->getBarcode($code);
         $renderer = new PngRenderer();
 
-        $strBarcode = base64_encode($renderer->render($barcode, $barcode->getWidth() * 2));
+        $strBarcode = $renderer->render($barcode, $barcode->getWidth(), 60);
 
         return new Response($strBarcode, 200, [
-            'Content-Type' => 'image/jpeg; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="'.$code.'-barcode.jpeg"',
+            'Content-Type' => 'image/png; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="'.$code.'-barcode.png"',
             'Content-Length' => strlen($strBarcode),
         ]);
     }
@@ -78,15 +78,15 @@ class BookCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            FormField::addColumn(5),
+            FormField::addColumn(5)->hideOnDetail(),
             TextField::new('title'),
             TextField::new('author'),
-            FormField::addColumn(4),
+            FormField::addColumn(4)->hideOnDetail(),
             TextField::new('isbn'),
             TextField::new('code', 'Barcode')
             ->onlyOnDetail()
             ->setTemplatePath('admin/field/barcode.html.twig'),
-            FormField::addColumn(2),
+            FormField::addColumn(2)->hideOnDetail(),
             ChoiceField::new('status')->renderAsBadges([
                 'available' => 'success',
                 'loaned' => 'secondary',
