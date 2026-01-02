@@ -1364,6 +1364,14 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     postcss_config_file?: scalar|null, // Path to PostCSS config file which is passed to the Tailwind CLI // Default: null
  *     strict_mode?: bool|null, // When enabled, an exception will be thrown if there are no built assets (default: false in `test` env, true otherwise) // Default: null
  * }
+ * @psalm-type BabdevPagerfantaConfig = array{
+ *     default_view?: scalar|null, // Default: "default"
+ *     default_twig_template?: scalar|null, // Default: "@BabDevPagerfanta/default.html.twig"
+ *     exceptions_strategy?: array{
+ *         out_of_range_page?: "to_http_not_found"|"custom", // Default: "to_http_not_found"
+ *         not_valid_current_page?: "to_http_not_found"|"custom", // Default: "to_http_not_found"
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1378,6 +1386,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     survos_barcode?: SurvosBarcodeConfig,
  *     stimulus?: StimulusConfig,
  *     symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *     babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1393,6 +1402,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         survos_barcode?: SurvosBarcodeConfig,
  *         stimulus?: StimulusConfig,
  *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     },
  *     "when@local"?: array{
  *         imports?: ImportsConfig,
@@ -1409,6 +1419,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         survos_barcode?: SurvosBarcodeConfig,
  *         stimulus?: StimulusConfig,
  *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1424,6 +1435,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         survos_barcode?: SurvosBarcodeConfig,
  *         stimulus?: StimulusConfig,
  *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1439,6 +1451,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         survos_barcode?: SurvosBarcodeConfig,
  *         stimulus?: StimulusConfig,
  *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         babdev_pagerfanta?: BabdevPagerfantaConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
