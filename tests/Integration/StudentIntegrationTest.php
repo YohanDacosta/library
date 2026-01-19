@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Integration;
 
 use App\Entity\Course;
 use App\Entity\School;
 use App\Entity\Student;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class StudentIntegrationTest extends KernelTestCase
