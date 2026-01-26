@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @extends ServiceEntityRepository<Book>
@@ -14,6 +17,27 @@ class BookRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Book::class);
+    }
+
+    public function findAllBooks(): Pagerfanta
+    {
+        $query = $this->createQueryBuilder('b')
+            ->orderBy('b.created_at', 'DESC')
+            ->getQuery();
+        return New Pagerfanta(new QueryAdapter($query));
+    }
+
+    public function filterBookByTitle($filter): Pagerfanta
+    {
+        if ($filter !== "") {
+            $query = $this->createQueryBuilder('b')
+                ->where('b.title LIKE :filter')
+                ->setParameter('filter', "%{$filter}%")
+                ->getQuery();
+            return New Pagerfanta(new QueryAdapter($query));
+        }
+
+        return New Pagerfanta(new ArrayAdapter([]));
     }
 
     //    /**
