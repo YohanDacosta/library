@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Services\BookService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -23,15 +24,28 @@ final class AppController extends AbstractController
         $this->bookService = $bookService;
     }
 
-    #[Route('/', name: 'app_app')]
-    public function index(): Response
+    #[Route('/', name: 'app_home')]
+    public function index(Request $request): Response
     {
+        $searchTerm = $request->query->get('q');
+
+        if ($request->query->get('preview')){
+            $books = $this->bookService->filterBookByName($searchTerm);
+
+            return $this->render('components/_preview.html.twig', [
+                    'books' => $books
+            ]);
+        }
+
         $books = $this->bookService->getBooks();
+        $books->setMaxPerPage(2);
+        $books->setCurrentPage($request->query->get('page', 1));
 
         return $this->render('app/index.html.twig', [
             'controller_name' => 'AppController',
             'books' => $books,
-            'categories' => self::COLORED_CATEGORIES
+            'categories' => self::COLORED_CATEGORIES,
+            'searchTerm' => $searchTerm
         ]);
     }
 }
