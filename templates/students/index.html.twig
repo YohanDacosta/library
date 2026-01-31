@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Library - Books{% endblock %}
+{% block title %}Library - Students{% endblock %}
 
 {% block body %}
+
 <style>
     /* Base styles (Mobile first) */
     .sidebar {
@@ -20,8 +21,8 @@
     .main-content { padding: 16px; }
     .main-wrapper { margin-left: 0; }
     .page-title { font-size: 24px; margin-bottom: 20px; }
-    .book-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .search-dropdown { left: 0; right: 0; transform: none; min-width: auto; width: auto; margin: 8px 0 0 0; }
+    .students-table { display: none; }
+    .students-cards { display: block; }
     .filter-buttons { flex-wrap: wrap; justify-content: center; }
 
     /* Sidebar open state for mobile */
@@ -30,11 +31,12 @@
 
     /* Tablet (768px+) */
     @media (min-width: 768px) {
-        .book-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .main-content { padding: 24px; }
         .page-title { font-size: 30px; }
-        .search-dropdown { left: 50%; right: auto; transform: translateX(-50%); min-width: 700px; width: max-content; }
+        .students-table { display: block; }
+        .students-cards { display: none; }
         .filter-buttons { justify-content: flex-end; }
+        .table-school-col { display: none; }
     }
 
     /* Desktop (1024px+) */
@@ -50,14 +52,9 @@
         .sidebar-close-btn { display: none; }
         .mobile-header { display: none; }
         .desktop-header { display: block; }
-        .book-grid { grid-template-columns: repeat(4, 1fr); }
         .main-content { padding: 32px; }
         .page-title { font-size: 36px; margin-bottom: 32px; }
-    }
-
-    /* Large Desktop (1280px+) */
-    @media (min-width: 1280px) {
-        .book-grid { grid-template-columns: repeat(5, 1fr); gap: 24px; }
+        .table-school-col { display: block; }
     }
 </style>
 
@@ -102,16 +99,13 @@
                     </a>
                 </li>
                 <li style="margin-bottom: 4px;">
-                    <a href="{{ path('student_index') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #374151; border-radius: 8px; text-decoration: none;">
+                    <a href="#" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #9333ea; background: #faf5ff; border-radius: 8px; text-decoration: none; font-weight: 500;">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9333ea;" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
                             </svg>
                             <span>Students</span>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" style="height: 16px; width: 16px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                        </svg>
                     </a>
                 </li>
                 <li style="margin-bottom: 4px;">
@@ -129,13 +123,16 @@
                     </a>
                 </li>
                 <li style="margin-bottom: 4px;">
-                    <a href="{{ path('app_home') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #9333ea; background: #faf5ff; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                    <a href="{{ path('app_home') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #374151; border-radius: 8px; text-decoration: none;">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9333ea;" viewBox="0 0 20 20" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                             </svg>
                             <span>Library</span>
                         </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" style="height: 16px; width: 16px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
                     </a>
                 </li>
                 <li style="margin-bottom: 4px;">
@@ -229,48 +226,49 @@
         {# Main Content #}
         <main class="main-content" style="flex: 1; overflow-y: auto; background: #f9fafb;">
             {# Page Title #}
-            <h1 class="page-title" style="font-family: Georgia, serif; text-align: center; color: #111827; margin-top: 0;">Todos os livros</h1>
+            <h1 class="page-title" style="font-family: Georgia, serif; text-align: center; color: #111827; margin-top: 0;">Estudiantes</h1>
 
             {# Search and Filters #}
-            <div style="max-width: 896px; margin: 0 auto 24px auto;">
-                {# Search Bar #}
-                <div
-                    {{ stimulus_controller('search-book', {url: path('app_home')}) }}
-                    style="position: relative; margin-bottom: 16px;"
-                >
+            <div style="max-width: 1100px; margin: 0 auto 24px auto;">
+                {# Search Bar with Stimulus Controller #}
+                <div style="position: relative; margin-bottom: 16px;" {{ stimulus_controller('search-student', {url: path('student_index')}) }}>
                     <div style="display: flex; align-items: center; background: white; border-radius: 9999px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; padding: 10px 20px;">
                         <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9ca3af; margin-right: 12px; flex-shrink: 0;" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                         </svg>
                         <input
-                            data-search-book-target="filter"
-                            data-action="search-book#handleSearch"
                             style="flex: 1; outline: none; color: #374151; background: transparent; border: none; font-size: 16px; min-width: 0;"
                             type="search"
-                            name="q"
-                            value="{{ searchTerm }}"
-                            placeholder="Busque por livro, autor..."
+                            placeholder="Buscar estudiante..."
+                            data-search-student-target="filter"
+                            data-action="input->search-student#handleSearch"
                         >
                     </div>
 
                     {# Search Results Dropdown #}
                     <div
-                        data-search-book-target="result"
-                        class="hidden search-dropdown"
-                        style="position: absolute; top: 100%; background: white; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); max-height: 400px; overflow-y: auto; overflow-x: hidden; z-index: 50;"
+                        data-search-student-target="result"
+                        class="hidden"
+                        style="position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; z-index: 50; max-height: 400px; overflow-y: auto;"
                     ></div>
                 </div>
 
                 {# Filter Buttons #}
                 <div class="filter-buttons" style="display: flex; gap: 8px;">
                     <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                        Filtrar por categoria
+                        Filtrar por curso
                         <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
                     </button>
                     <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                        Mais recentes
+                        Filtrar por escuela
+                        <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
+                        Más recientes
                         <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
@@ -278,111 +276,175 @@
                 </div>
             </div>
 
-            {# Book Grid #}
-            <div class="book-grid" style="display: grid;">
-                {% for book in books %}
-                    <div>
-                        {# Book Cover Placeholder #}
-                        <div style="aspect-ratio: 3/4; background: #e5e7eb; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 48px; width: 48px; color: #9ca3af;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                        </div>
-                        {# Book Info #}
-                        <h3 style="font-size: 14px; font-weight: 500; color: #111827; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ book.title }}</h3>
-                        <p style="font-size: 12px; color: #6b7280; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ book.author }}</p>
+            {# Students Table Container #}
+            <div style="max-width: 1100px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+                {# Desktop/Tablet: Table layout #}
+                <div class="students-table">
+                    {# Table header #}
+                    <div style="display: grid; grid-template-columns: 56px 1fr 80px 1fr 120px 60px; gap: 12px; padding: 16px 20px; background: #fafafa; border-bottom: 1px solid #e5e7eb; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
+                        <span></span>
+                        <span>Nombre</span>
+                        <span>Curso</span>
+                        <span class="table-school-col">Escuela</span>
+                        <span>Fecha Registro</span>
+                        <span></span>
                     </div>
-                {% endfor %}
+
+                    {# Table rows #}
+                    <div>
+                        {% for student in students %}
+                            {# Get initials #}
+                            {% set initials = student.firstName|slice(0, 1)|upper ~ student.lastName|slice(0, 1)|upper %}
+
+                            {# Determine avatar color based on first letter #}
+                            {% set firstLetter = student.firstName|slice(0, 1)|upper %}
+                            {% if firstLetter in ['A', 'B', 'C', 'D', 'E'] %}
+                                {% set avatarBg = '#9333ea' %}
+                            {% elseif firstLetter in ['F', 'G', 'H', 'I', 'J'] %}
+                                {% set avatarBg = '#3b82f6' %}
+                            {% elseif firstLetter in ['K', 'L', 'M', 'N', 'O'] %}
+                                {% set avatarBg = '#10b981' %}
+                            {% elseif firstLetter in ['P', 'Q', 'R', 'S', 'T'] %}
+                                {% set avatarBg = '#f59e0b' %}
+                            {% else %}
+                                {% set avatarBg = '#ec4899' %}
+                            {% endif %}
+
+                            <div style="display: grid; grid-template-columns: 56px 1fr 80px 1fr 120px 60px; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s; cursor: pointer;"
+                                 onmouseover="this.style.background='#faf5ff'"
+                                 onmouseout="this.style.background='transparent'">
+                                {# Avatar #}
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: {{ avatarBg }}; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: 600; font-size: 14px;">{{ initials }}</span>
+                                </div>
+
+                                {# Full Name #}
+                                <span style="font-size: 14px; font-weight: 500; color: #111827;">
+                                    {{ student.firstName }} {{ student.lastName }}
+                                </span>
+
+                                {# Course Badge #}
+                                <span style="display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; background: #f3e8ff; color: #9333ea; font-size: 12px; font-weight: 500; border-radius: 9999px; width: fit-content;">
+                                    {{ student.course.name }}
+                                </span>
+
+                                {# School #}
+                                <span class="table-school-col" style="font-size: 13px; color: #374151;">
+                                    {{ student.school.name }}
+                                </span>
+
+                                {# Registration Date #}
+                                <span style="font-size: 13px; color: #6b7280;">
+                                    {{ student.createdAt|date('d M, Y') }}
+                                </span>
+
+                                {# Actions #}
+                                <button type="button" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 6px; color: #9ca3af;"
+                                        onmouseover="this.style.background='#f3f4f6'; this.style.color='#374151'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#9ca3af'">
+                                    <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Mobile: Card layout #}
+                <div class="students-cards">
+                    {% for student in students %}
+                        {# Get initials #}
+                        {% set initials = student.firstName|slice(0, 1)|upper ~ student.lastName|slice(0, 1)|upper %}
+
+                        {# Determine avatar color based on first letter #}
+                        {% set firstLetter = student.firstName|slice(0, 1)|upper %}
+                        {% if firstLetter in ['A', 'B', 'C', 'D', 'E'] %}
+                            {% set avatarBg = '#9333ea' %}
+                        {% elseif firstLetter in ['F', 'G', 'H', 'I', 'J'] %}
+                            {% set avatarBg = '#3b82f6' %}
+                        {% elseif firstLetter in ['K', 'L', 'M', 'N', 'O'] %}
+                            {% set avatarBg = '#10b981' %}
+                        {% elseif firstLetter in ['P', 'Q', 'R', 'S', 'T'] %}
+                            {% set avatarBg = '#f59e0b' %}
+                        {% else %}
+                            {% set avatarBg = '#ec4899' %}
+                        {% endif %}
+
+                        <div style="display: flex; gap: 12px; padding: 16px; border-bottom: 1px solid #f3f4f6; align-items: flex-start;"
+                             onmouseover="this.style.background='#faf5ff'"
+                             onmouseout="this.style.background='transparent'">
+                            {# Avatar #}
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: {{ avatarBg }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <span style="color: white; font-weight: 600; font-size: 16px;">{{ initials }}</span>
+                            </div>
+
+                            {# Student info #}
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 style="font-size: 15px; font-weight: 500; color: #111827; margin: 0 0 4px 0;">
+                                    {{ student.firstName }} {{ student.lastName }}
+                                </h4>
+                                <p style="font-size: 13px; color: #6b7280; margin: 0 0 8px 0;">
+                                    <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                        <span style="background: #f3e8ff; color: #9333ea; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 500;">{{ student.course.name }}</span>
+                                    </span>
+                                </p>
+                                <p style="font-size: 12px; color: #9ca3af; margin: 0;">
+                                    {{ student.school.name }}
+                                </p>
+                                <p style="font-size: 11px; color: #9ca3af; margin: 4px 0 0 0;">
+                                    {{ student.createdAt|date('d M, Y') }}
+                                </p>
+                            </div>
+
+                            {# Actions #}
+                            <button type="button" style="background: none; border: none; cursor: pointer; padding: 8px; color: #9ca3af; flex-shrink: 0;">
+                                <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
 
             {# Pagination #}
-            {% if books.haveToPaginate %}
-                <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;">
-                    {# Previous Arrow #}
-                    {% if books.hasPreviousPage %}
-                        <a href="{{ path('app_home', {'page': books.previousPage}) }}"
-                           style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; border-radius: 4px;"
-                           onmouseover="this.style.background='#f3f4f6'"
-                           onmouseout="this.style.background='transparent'">
-                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                        </a>
-                    {% else %}
-                        <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #d1d5db;">
-                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                        </span>
-                    {% endif %}
+            <div style="max-width: 1100px; margin: 32px auto 0 auto; padding-top: 24px; border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;">
+                {# Previous Arrow #}
+                <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #d1d5db;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </span>
 
-                    {# Page Numbers #}
-                    {% set currentPage = books.currentPage %}
-                    {% set totalPages = books.nbPages %}
+                {# Page Numbers #}
+                <span style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #9333ea; color: white; font-size: 14px; font-weight: 500; border-radius: 6px;">1</span>
+                <a href="#" style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; font-size: 14px; border-radius: 4px;"
+                   onmouseover="this.style.background='#f3f4f6'"
+                   onmouseout="this.style.background='transparent'">2</a>
+                <a href="#" style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; font-size: 14px; border-radius: 4px;"
+                   onmouseover="this.style.background='#f3f4f6'"
+                   onmouseout="this.style.background='transparent'">3</a>
 
-                    {# Always show first page #}
-                    {% if currentPage > 3 %}
-                        <a href="{{ path('app_home', {'page': 1}) }}"
-                           style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; font-size: 14px; border-radius: 4px;"
-                           onmouseover="this.style.background='#f3f4f6'"
-                           onmouseout="this.style.background='transparent'">1</a>
-                        {% if currentPage > 4 %}
-                            <span style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 14px;">...</span>
-                        {% endif %}
-                    {% endif %}
+                {# Next Arrow #}
+                <a href="#" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; border-radius: 4px;"
+                   onmouseover="this.style.background='#f3f4f6'"
+                   onmouseout="this.style.background='transparent'">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
 
-                    {# Pages around current #}
-                    {% for page in max(1, currentPage - 2)..min(totalPages, currentPage + 2) %}
-                        {% if page == currentPage %}
-                            <span style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #9333ea; color: white; font-size: 14px; font-weight: 500; border-radius: 6px;">{{ page }}</span>
-                        {% else %}
-                            <a href="{{ path('app_home', {'page': page}) }}"
-                               style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; font-size: 14px; border-radius: 4px;"
-                               onmouseover="this.style.background='#f3f4f6'"
-                               onmouseout="this.style.background='transparent'">{{ page }}</a>
-                        {% endif %}
-                    {% endfor %}
-
-                    {# Always show last page #}
-                    {% if currentPage < totalPages - 2 %}
-                        {% if currentPage < totalPages - 3 %}
-                            <span style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 14px;">...</span>
-                        {% endif %}
-                        <a href="{{ path('app_home', {'page': totalPages}) }}"
-                           style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; font-size: 14px; border-radius: 4px;"
-                           onmouseover="this.style.background='#f3f4f6'"
-                           onmouseout="this.style.background='transparent'">{{ totalPages }}</a>
-                    {% endif %}
-
-                    {# Next Arrow #}
-                    {% if books.hasNextPage %}
-                        <a href="{{ path('app_home', {'page': books.nextPage}) }}"
-                           style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #374151; text-decoration: none; border-radius: 4px;"
-                           onmouseover="this.style.background='#f3f4f6'"
-                           onmouseout="this.style.background='transparent'">
-                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-                    {% else %}
-                        <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #d1d5db;">
-                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </span>
-                    {% endif %}
-
-                    {# Per Page Selector #}
-                    <div style="margin-left: 16px; display: flex; align-items: center; gap: 4px;">
-                        <button type="button" style="display: flex; align-items: center; gap: 4px; padding: 8px 12px; background: transparent; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; color: #374151; cursor: pointer;">
-                            10 / page
-                            <svg style="width: 16px; height: 16px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                    </div>
+                {# Per Page Selector #}
+                <div style="margin-left: 16px; display: flex; align-items: center; gap: 4px;">
+                    <button type="button" style="display: flex; align-items: center; gap: 4px; padding: 8px 12px; background: transparent; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; color: #374151; cursor: pointer;">
+                        10 / page
+                        <svg style="width: 16px; height: 16px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
                 </div>
-            {% endif %}
+            </div>
         </main>
     </div>
 </div>
