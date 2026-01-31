@@ -20,7 +20,6 @@ export default class extends Controller {
             return;
         }
 
-        // Mostrar loading inmediatamente
         this.showLoading();
 
         this.timeout = setTimeout(() => {
@@ -35,7 +34,7 @@ export default class extends Controller {
                     <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span style="font-size: 14px; color: #6b7280;">Buscando...</span>
+                <span style="font-size: 14px; color: #6b7280;">Buscando préstamos...</span>
             </div>
             <style>
                 @keyframes spin {
@@ -56,9 +55,6 @@ export default class extends Controller {
 
             const response = await fetch(`${this.urlValue}?${params.toString()}`);
 
-            console.log(params.toString());
-            console.log(this.urlValue);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -69,14 +65,14 @@ export default class extends Controller {
         } catch (error) {
             console.error('Error fetching search results:', error);
             this.resultTarget.innerHTML = `
-                <div class="p-6 text-center">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-3">
-                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style="padding: 24px; text-align: center;">
+                    <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: #fee2e2; margin-bottom: 12px;">
+                        <svg style="height: 24px; width: 24px; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <p class="text-sm font-medium text-gray-900">Error al cargar resultados</p>
-                    <p class="text-xs text-gray-500 mt-1">Por favor, intenta nuevamente</p>
+                    <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">Error al cargar resultados</p>
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Por favor, intenta nuevamente</p>
                 </div>
             `;
             this.showResults();
