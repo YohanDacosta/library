@@ -1,0 +1,166 @@
+{% if loans is empty %}
+    <div style="padding: 32px; text-align: center;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #f3f4f6; margin-bottom: 16px;">
+            <svg style="height: 32px; width: 32px; color: #9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+        </div>
+        <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">No se encontraron préstamos</p>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Intenta con otro término de búsqueda</p>
+    </div>
+{% else %}
+    <style>
+        .loan-search-results-table { display: none; }
+        .loan-search-results-cards { display: block; }
+
+        @media (min-width: 768px) {
+            .loan-search-results-table { display: block; }
+            .loan-search-results-cards { display: none; }
+        }
+    </style>
+
+    <div style="padding: 8px 0;">
+        {# Header con contador #}
+        <div style="padding: 12px 16px; background: linear-gradient(to right, #f5f3ff, #eff6ff); border-bottom: 1px solid #e0e7ff;">
+            <p style="font-size: 12px; font-weight: 600; color: #4f46e5; margin: 0;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #4f46e5; color: white; font-size: 11px; margin-right: 8px;">
+                    {{ loans|length }}
+                </span>
+                Préstamo{{ loans|length > 1 ? 's' : '' }} encontrado{{ loans|length > 1 ? 's' : '' }}
+            </p>
+        </div>
+
+        {# Desktop: Table layout #}
+        <div class="loan-search-results-table">
+            {# Table header #}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 100px 90px 100px 100px; gap: 12px; padding: 12px 16px; background: #fafafa; border-bottom: 1px solid #e5e7eb; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
+                <span>Estudiante</span>
+                <span>Libro</span>
+                <span>Tutor</span>
+                <span>Estado</span>
+                <span>F. Préstamo</span>
+                <span>F. Devolución</span>
+            </div>
+
+            {# Table rows #}
+            <div>
+                {% for loan in loans %}
+                    {# Status badge colors #}
+                    {% if loan.status.value == 'active' %}
+                        {% set statusBg = '#dcfce7' %}
+                        {% set statusColor = '#166534' %}
+                        {% set statusText = 'Activo' %}
+                    {% elseif loan.status.value == 'returned' %}
+                        {% set statusBg = '#dbeafe' %}
+                        {% set statusColor = '#1e40af' %}
+                        {% set statusText = 'Devuelto' %}
+                    {% elseif loan.status.value == 'overdue' %}
+                        {% set statusBg = '#fef3c7' %}
+                        {% set statusColor = '#92400e' %}
+                        {% set statusText = 'Vencido' %}
+                    {% else %}
+                        {% set statusBg = '#fee2e2' %}
+                        {% set statusColor = '#991b1b' %}
+                        {% set statusText = 'Perdido' %}
+                    {% endif %}
+
+                    <a href="#" style="display: grid; grid-template-columns: 1fr 1fr 100px 90px 100px 100px; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s;"
+                       onmouseover="this.style.background='#faf5ff'"
+                       onmouseout="this.style.background='transparent'">
+                        {# Student Name #}
+                        <span style="font-size: 13px; font-weight: 500; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ loan.student.firstName }} {{ loan.student.lastName }}
+                        </span>
+
+                        {# Book Title #}
+                        <span style="font-size: 13px; color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ loan.book.title }}
+                        </span>
+
+                        {# Tutor #}
+                        <span style="font-size: 13px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ loan.tutor.firstName }}
+                        </span>
+
+                        {# Status Badge #}
+                        <span style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; background: {{ statusBg }}; color: {{ statusColor }}; font-size: 11px; font-weight: 500; border-radius: 9999px; width: fit-content;">
+                            {{ statusText }}
+                        </span>
+
+                        {# Loan Date #}
+                        <span style="font-size: 12px; color: #374151;">
+                            {{ loan.loanDate|date('d M, Y') }}
+                        </span>
+
+                        {# Return Date #}
+                        <span style="font-size: 12px; color: #374151;">
+                            {{ loan.returnDate ? loan.returnDate|date('d M, Y') : '-' }}
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# Mobile: Card layout #}
+        <div class="loan-search-results-cards">
+            {% for loan in loans %}
+                {# Status badge colors #}
+                {% if loan.status.value == 'active' %}
+                    {% set statusBg = '#dcfce7' %}
+                    {% set statusColor = '#166534' %}
+                    {% set statusText = 'Activo' %}
+                {% elseif loan.status.value == 'returned' %}
+                    {% set statusBg = '#dbeafe' %}
+                    {% set statusColor = '#1e40af' %}
+                    {% set statusText = 'Devuelto' %}
+                {% elseif loan.status.value == 'overdue' %}
+                    {% set statusBg = '#fef3c7' %}
+                    {% set statusColor = '#92400e' %}
+                    {% set statusText = 'Vencido' %}
+                {% else %}
+                    {% set statusBg = '#fee2e2' %}
+                    {% set statusColor = '#991b1b' %}
+                    {% set statusText = 'Perdido' %}
+                {% endif %}
+
+                <a href="#" style="display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6;"
+                   onmouseover="this.style.background='#faf5ff'"
+                   onmouseout="this.style.background='transparent'">
+                    {# Student Name #}
+                    <h4 style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">
+                        {{ loan.student.firstName }} {{ loan.student.lastName }}
+                    </h4>
+
+                    {# Book Title #}
+                    <p style="font-size: 13px; color: #6b7280; margin: 0; display: flex; align-items: center; gap: 6px;">
+                        <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        {{ loan.book.title }}
+                    </p>
+
+                    {# Tutor #}
+                    <p style="font-size: 12px; color: #9ca3af; margin: 0; display: flex; align-items: center; gap: 6px;">
+                        <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Tutor: {{ loan.tutor.firstName }}
+                    </p>
+
+                    {# Status and Dates row #}
+                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                        <span style="display: inline-flex; align-items: center; padding: 2px 8px; background: {{ statusBg }}; color: {{ statusColor }}; font-size: 11px; font-weight: 500; border-radius: 9999px;">
+                            {{ statusText }}
+                        </span>
+                        <span style="font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 4px;">
+                            <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ loan.loanDate|date('d M') }} → {{ loan.returnDate ? loan.returnDate|date('d M') : '...' }}
+                        </span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

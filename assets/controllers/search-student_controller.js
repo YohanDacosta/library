@@ -35,7 +35,7 @@ export default class extends Controller {
                     <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span style="font-size: 14px; color: #6b7280;">Buscando...</span>
+                <span style="font-size: 14px; color: #6b7280;">Buscando estudiantes...</span>
             </div>
             <style>
                 @keyframes spin {
@@ -55,9 +55,6 @@ export default class extends Controller {
             });
 
             const response = await fetch(`${this.urlValue}?${params.toString()}`);
-
-            console.log(params.toString());
-            console.log(this.urlValue);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
