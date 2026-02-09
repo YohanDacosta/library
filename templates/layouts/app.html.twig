@@ -1,0 +1,86 @@
+{#
+    Main Application Layout
+    Usage: {% extends 'layouts/app.html.twig' %}
+
+    Required variables:
+    - activePage: string ('home', 'students', 'loans', 'library', 'account', 'class')
+
+    Available blocks:
+    - title: Page title
+    - page_styles: Additional CSS specific to the page
+    - main_content: Main page content
+#}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<style>
+    /* Base styles (Mobile first) */
+    .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+    }
+    .sidebar-overlay { display: none; }
+    .sidebar-close-btn { display: block; }
+    .mobile-header { display: flex; }
+    .desktop-header { display: none; }
+    .main-content { padding: 16px; }
+    .main-wrapper { margin-left: 0; }
+    .page-title { font-size: 24px; margin-bottom: 20px; }
+
+    /* Sidebar open state for mobile */
+    .sidebar.open { display: flex; }
+    .sidebar-overlay.open { display: block; }
+
+    /* Tablet (768px+) */
+    @media (min-width: 768px) {
+        .main-content { padding: 24px; }
+        .page-title { font-size: 30px; }
+    }
+
+    /* Desktop (1024px+) */
+    @media (min-width: 1024px) {
+        .sidebar {
+            display: flex;
+            position: relative;
+            top: auto;
+            left: auto;
+            bottom: auto;
+            z-index: auto;
+        }
+        .sidebar-close-btn { display: none; }
+        .mobile-header { display: none; }
+        .desktop-header { display: block; }
+        .main-content { padding: 32px; }
+        .page-title { font-size: 36px; margin-bottom: 32px; }
+    }
+</style>
+
+{% block page_styles %}{% endblock %}
+
+<div style="display: flex; min-height: 100vh; width: 100%;">
+    {% include 'components/_sidebar.html.twig' with {activePage: activePage|default('home')} %}
+
+    {# Main Content Area #}
+    <div class="main-wrapper" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0;">
+        {% include 'components/_header.html.twig' %}
+
+        {# Main Content #}
+        <main class="main-content" style="flex: 1; overflow-y: auto; background: #f9fafb;">
+            {% block main_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+    }
+</script>
+{% endblock %}

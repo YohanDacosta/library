@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Loan;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 
@@ -26,14 +27,25 @@ class LoanRepository extends ServiceEntityRepository
         return New Pagerfanta(new QueryAdapter($query));
     }
 
-    public function filterLoanByNameBook(int $id): Pagerfanta
+    public function filterLoanByNameBook($filter): Pagerfanta
     {
+        if ($filter === null || $filter === "") {
+            return new Pagerfanta(new ArrayAdapter([]));
+        }
+
         $query = $this->createQueryBuilder('l')
-            ->where('l.book_id = :id')
-            ->setParameter('id', $id)
+            ->select('DISTINCT l')
+            ->join('l.student', 's')
+            ->join('l.book', 'b')
+            ->join('l.tutor', 't')
+            ->where('s.first_name LIKE :filter')
+            ->orWhere('s.last_name LIKE :filter')
+            ->orWhere('b.title LIKE :filter')
+            ->setParameter('filter', "%{$filter}%")
+            ->setMaxResults(5)
             ->getQuery()
-            ->getOneOrNullResult();
-        return New Pagerfanta(new QueryAdapter($query));
+            ->getResult();
+        return new Pagerfanta(new ArrayAdapter($query));
     }
 
     //    /**

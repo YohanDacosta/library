@@ -1,0 +1,57 @@
+{# Header Component - Mobile and Desktop #}
+
+{# Mobile Header #}
+<header class="mobile-header" style="background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 16px; align-items: center; justify-content: space-between;">
+    <button onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; padding: 8px;">
+        <svg style="width: 24px; height: 24px; color: #374151;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; background: #9333ea; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" style="height: 18px; width: 18px; color: white;" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+            </svg>
+        </div>
+        <span style="font-size: 18px; font-weight: 700; color: #111827;">sp<span style="color: #9333ea;">!</span>k</span>
+    </div>
+{#    <div style="width: 36px; height: 36px; border-radius: 50%; background: #f3e8ff; display: flex; align-items: center; justify-content: center;">#}
+{#        <span style="color: #9333ea; font-weight: 500; font-size: 12px;">PL</span>#}
+{#    </div>#}
+</header>
+
+{# Desktop Header #}
+<header class="desktop-header" style="background: white; border-bottom: 1px solid #e5e7eb; padding: 16px 32px; height: 73px; box-sizing: border-box;">
+{#    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 24px; height: 100%;">#}
+{#        #}{# Notification Bell #}
+{#        <button type="button" style="position: relative; color: #6b7280; background: none; border: none; cursor: pointer;" aria-label="Notifications">#}
+{#            <svg xmlns="http://www.w3.org/2000/svg" style="height: 24px; width: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
+{#                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>#}
+{#            </svg>#}
+{#            <span style="position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: #ef4444; border-radius: 50%; color: white; font-size: 10px; display: flex; align-items: center; justify-content: center;">3</span>#}
+{#        </button>#}
+
+{#        #}{# Chat Icon #}
+{#        <button type="button" style="color: #6b7280; background: none; border: none; cursor: pointer;" aria-label="Messages">#}
+{#            <svg xmlns="http://www.w3.org/2000/svg" style="height: 24px; width: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
+{#                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>#}
+{#            </svg>#}
+{#        </button>#}
+
+{#        #}{# User Profile #}
+{#        <div style="display: flex; align-items: center; gap: 12px; padding-left: 24px; border-left: 1px solid #e5e7eb;">#}
+{#            <div style="width: 40px; height: 40px; border-radius: 50%; background: #f3e8ff; display: flex; align-items: center; justify-content: center;">#}
+{#                <span style="color: #9333ea; font-weight: 500; font-size: 14px;">PL</span>#}
+{#            </div>#}
+{#            <div style="text-align: right;">#}
+{#                <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">Priscilla Lily</p>#}
+{#                <p style="font-size: 12px; color: #6b7280; margin: 0;">Admin</p>#}
+{#            </div>#}
+{#            <button type="button" style="color: #9ca3af; background: none; border: none; cursor: pointer;" aria-label="User menu">#}
+{#                <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px;" viewBox="0 0 20 20" fill="currentColor">#}
+{#                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>#}
+{#                </svg>#}
+{#            </button>#}
+{#        </div>#}
+{#    </div>#}
+</header>

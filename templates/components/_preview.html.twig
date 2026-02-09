@@ -33,20 +33,41 @@
         {# Desktop: Table layout #}
         <div class="search-results-table">
             {# Table header #}
-            <div style="display: grid; grid-template-columns: 48px 1fr 1fr 90px 100px 50px 100px; gap: 12px; padding: 12px 16px; background: #fafafa; border-bottom: 1px solid #e5e7eb; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
+            <div style="display: grid; grid-template-columns: 48px 1fr 1fr 100px 120px; gap: 20px; padding: 12px 16px; background: #fafafa; border-bottom: 1px solid #e5e7eb; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
                 <span></span>
                 <span>Título</span>
                 <span>Autor</span>
                 <span>Código</span>
                 <span>Estado</span>
-                <span>Cant.</span>
-                <span>Fecha</span>
             </div>
 
             {# Table rows #}
             <div>
                 {% for book in books %}
-                    <a href="#" style="display: grid; grid-template-columns: 48px 1fr 1fr 90px 100px 50px 100px; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s;"
+                    {# Status badge colors #}
+                    {% if book.status.value == 'available' %}
+                        {% set statusBg = '#dcfce7' %}
+                        {% set statusColor = '#166534' %}
+                        {% set statusText = 'Disponible' %}
+                    {% elseif book.status.value == 'loaned' %}
+                        {% set statusBg = '#dbeafe' %}
+                        {% set statusColor = '#1e40af' %}
+                        {% set statusText = 'Prestado' %}
+                    {% elseif book.status.value == 'reserved' %}
+                        {% set statusBg = '#fef3c7' %}
+                        {% set statusColor = '#92400e' %}
+                        {% set statusText = 'Reservado' %}
+                    {% elseif book.status.value == 'repaired' %}
+                        {% set statusBg = '#f3e8ff' %}
+                        {% set statusColor = '#7c3aed' %}
+                        {% set statusText = 'En reparación' %}
+                    {% else %}
+                        {% set statusBg = '#fee2e2' %}
+                        {% set statusColor = '#991b1b' %}
+                        {% set statusText = 'Perdido' %}
+                    {% endif %}
+
+                    <a href="#" style="display: grid; grid-template-columns: 48px 1fr 1fr 100px 120px; gap: 20px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s;"
                        onmouseover="this.style.background='#faf5ff'"
                        onmouseout="this.style.background='transparent'">
                         {# Book cover image #}
@@ -67,23 +88,13 @@
                         </span>
 
                         {# Code #}
-                        <span style="font-size: 13px; color: #6b7280; font-family: monospace;">
-                            #{{ book.code }}
+                        <span style="font-size: 13px; font-weight: 500; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: monospace;">
+                            {{ book.code }}
                         </span>
 
-                        {# Status #}
-                        <span style="font-size: 13px; color: #374151;">
-                            {{ book.status.value|capitalize }}
-                        </span>
-
-                        {# Quantity #}
-                        <span style="font-size: 13px; color: #374151; text-align: center;">
-                            {{ '%02d'|format(loop.index) }}
-                        </span>
-
-                        {# Date #}
-                        <span style="font-size: 12px; color: #374151;">
-                            {{ book.createdAt|date('d M, Y') }}
+                        {# Status Badge #}
+                        <span style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; background: {{ statusBg }}; color: {{ statusColor }}; font-size: 11px; font-weight: 500; border-radius: 9999px; width: fit-content;">
+                            {{ statusText }}
                         </span>
                     </a>
                 {% endfor %}
@@ -93,6 +104,29 @@
         {# Mobile: Card layout #}
         <div class="search-results-cards">
             {% for book in books %}
+                {# Status badge colors #}
+                {% if book.status.value == 'available' %}
+                    {% set statusBg = '#dcfce7' %}
+                    {% set statusColor = '#166534' %}
+                    {% set statusText = 'Disponible' %}
+                {% elseif book.status.value == 'loaned' %}
+                    {% set statusBg = '#dbeafe' %}
+                    {% set statusColor = '#1e40af' %}
+                    {% set statusText = 'Prestado' %}
+                {% elseif book.status.value == 'reserved' %}
+                    {% set statusBg = '#fef3c7' %}
+                    {% set statusColor = '#92400e' %}
+                    {% set statusText = 'Reservado' %}
+                {% elseif book.status.value == 'repaired' %}
+                    {% set statusBg = '#f3e8ff' %}
+                    {% set statusColor = '#7c3aed' %}
+                    {% set statusText = 'En reparación' %}
+                {% else %}
+                    {% set statusBg = '#fee2e2' %}
+                    {% set statusColor = '#991b1b' %}
+                    {% set statusText = 'Perdido' %}
+                {% endif %}
+
                 <a href="#" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: flex-start;"
                    onmouseover="this.style.background='#faf5ff'"
                    onmouseout="this.style.background='transparent'">
@@ -111,10 +145,9 @@
                         <p style="font-size: 13px; color: #6b7280; margin: 0 0 8px 0;">
                             {{ book.author }}
                         </p>
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; color: #9ca3af;">
-                            <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 4px;">#{{ book.code }}</span>
-                            <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 4px;">{{ book.status.value|capitalize }}</span>
-                            <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 4px;">{{ book.createdAt|date('d/m/Y') }}</span>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px;">
+                            <span style="background: #f3f4f6; color: #6b7280; padding: 2px 8px; border-radius: 4px;">#{{ book.code }}</span>
+                            <span style="background: {{ statusBg }}; color: {{ statusColor }}; padding: 2px 8px; border-radius: 9999px; font-weight: 500;">{{ statusText }}</span>
                         </div>
                     </div>
 

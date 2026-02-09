@@ -16,7 +16,7 @@ class LoanController extends AbstractController
         $this->loanService = $loanService;
     }
 
-    #[Route('/loan', name: 'loan_index')]
+    #[Route('/loan', name: 'app_loan')]
     public function index(Request $request): Response
     {
         $searchTerm = $request->query->get('q');
