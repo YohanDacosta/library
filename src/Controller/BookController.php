@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class AppController extends AbstractController
+final class BookController extends AbstractController
 {
     private const COLORED_CATEGORIES = [
         'available' => 'bg-green-300',
@@ -38,11 +38,11 @@ final class AppController extends AbstractController
         }
 
         $books = $this->bookService->getBooks();
-        $books->setMaxPerPage(2);
+        $books->setMaxPerPage(5);
         $books->setCurrentPage($request->query->get('page', 1));
 
-        return $this->render('app/index.html.twig', [
-            'controller_name' => 'AppController',
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'BookController',
             'books' => $books,
             'categories' => self::COLORED_CATEGORIES,
             'searchTerm' => $searchTerm
