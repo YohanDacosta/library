@@ -27,8 +27,8 @@ class LoanService
         return $this->entityManager->getRepository(Loan::class)->find($id);
     }
 
-    public function filterLoanByName($id = null): Pagerfanta
+    public function filterLoanByName($filter = null): Pagerfanta
     {
-        return $this->loanRepository->filterLoanByNameBook($id);
+        return $this->loanRepository->filterLoanByNameBook($filter);
     }
 }

@@ -1,0 +1,86 @@
+{# Sidebar Navigation Component #}
+{# Usage: {% include 'components/_sidebar.html.twig' with {activePage: 'home'} %} #}
+{# activePage options: 'home', 'students', 'loans', 'library', 'account', 'class' #}
+
+{# Mobile Sidebar Overlay #}
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40;"></div>
+
+{# Sidebar #}
+<aside class="sidebar" id="sidebar" style="width: 256px; min-width: 256px; background: white; border-right: 1px solid #e5e7eb; flex-direction: column;">
+    {# Logo #}
+    <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; height: 73px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; background: #9333ea; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: white;" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                </svg>
+            </div>
+            <span style="font-size: 20px; font-weight: 700; color: #111827;">sp<span style="color: #9333ea;">!</span>k</span>
+        </div>
+        {# Close button for mobile only #}
+        <button class="sidebar-close-btn" onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; padding: 8px;" aria-label="Close menu">
+            <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    {# Navigation Menu #}
+    <nav style="flex: 1; padding: 16px; overflow-y: auto;">
+        <ul style="list-style: none; margin: 0; padding: 0;">
+            {# Home #}
+            <li style="margin-bottom: 4px;">
+                {% if activePage == 'home' %}
+                    <a href="{{ path('app_home') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #9333ea; background: #faf5ff; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9333ea;" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                            <span>Home</span>
+                        </div>
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_home') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #374151; border-radius: 8px; text-decoration: none;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                            <span>Home</span>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" style="height: 16px; width: 16px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                {% endif %}
+            </li>
+
+            {# Loans #}
+            <li style="margin-bottom: 4px;">
+                {% if activePage == 'loans' %}
+                    <a href="{{ path('app_loan') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #9333ea; background: #faf5ff; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9333ea;" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Loans</span>
+                        </div>
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_loan') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #374151; border-radius: 8px; text-decoration: none;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Loans</span>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" style="height: 16px; width: 16px; color: #9ca3af;" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+</aside>
