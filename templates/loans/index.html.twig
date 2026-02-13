@@ -17,6 +17,20 @@
         .loans-cards { display: none; }
         .filter-buttons { justify-content: flex-end; }
     }
+
+    /* Modal styles */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.5);
+    }
+    .modal-overlay.open {
+        display: flex;
+    }
 </style>
 {% endblock %}
 
@@ -25,7 +39,7 @@
     <h1 class="page-title" style="font-family: Georgia, serif; text-align: center; color: #111827; margin-top: 0;">Préstamos</h1>
 
     {# Search and Filters #}
-    <div style="max-width: 1100px; margin: 0 auto 24px auto;">
+    <div style="max-width: 900px; margin: 0 auto 24px auto;">
         {# Search Bar with Stimulus Controller #}
         <div style="position: relative; margin-bottom: 16px;" {{ stimulus_controller('search-loan', {url: path('app_loan')}) }}>
             <div style="display: flex; align-items: center; background: white; border-radius: 9999px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; padding: 10px 20px;">
@@ -111,7 +125,16 @@
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr 100px 100px 110px 110px 60px; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s; cursor: pointer;"
                          onmouseover="this.style.background='#faf5ff'"
-                         onmouseout="this.style.background='transparent'">
+                         onmouseout="this.style.background='transparent'"
+                         data-controller="loan-edit"
+                         data-action="click->loan-edit#openModal"
+                         data-loan-edit-id-value="{{ loan.id }}"
+                         data-loan-edit-student-value="{{ loan.student.firstName }} {{ loan.student.lastName }}"
+                         data-loan-edit-book-value="{{ loan.book.title }}"
+                         data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
+                         data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
+                         data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
+                         data-loan-edit-status-value="{{ loan.status.value }}">
                         {# Student Name #}
                         <span style="font-size: 14px; font-weight: 500; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             {{ loan.student.firstName }} {{ loan.student.lastName }}
@@ -177,9 +200,18 @@
                     {% set statusText = 'Perdido' %}
                 {% endif %}
 
-                <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-bottom: 1px solid #f3f4f6;"
+                <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;"
                      onmouseover="this.style.background='#faf5ff'"
-                     onmouseout="this.style.background='transparent'">
+                     onmouseout="this.style.background='transparent'"
+                     data-controller="loan-edit"
+                     data-action="click->loan-edit#openModal"
+                     data-loan-edit-id-value="{{ loan.id }}"
+                     data-loan-edit-student-value="{{ loan.student.firstName }} {{ loan.student.lastName }}"
+                     data-loan-edit-book-value="{{ loan.book.title }}"
+                     data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
+                     data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
+                     data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
+                     data-loan-edit-status-value="{{ loan.status.value }}">
                     {# Student Name #}
                     <h4 style="font-size: 15px; font-weight: 500; color: #111827; margin: 0;">
                         {{ loan.student.firstName }} {{ loan.student.lastName }}
@@ -215,6 +247,105 @@
                     </div>
                 </div>
             {% endfor %}
+        </div>
+    </div>
+
+    {# Modal Edit Loan #}
+    <div id="editLoanModal" class="modal-overlay" data-controller="modal" data-action="click->modal#close">
+        <div style="background: white; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);"
+             data-action="click->modal#stopPropagation">
+
+            {# Header #}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+                <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0;">
+                    Detalles del Préstamo
+                </h2>
+                <button type="button" data-action="click->modal#close"
+                        style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 6px; color: #6b7280; display: flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.background='#f3f4f6'"
+                        onmouseout="this.style.background='transparent'">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            {# Form Body #}
+            <form id="editLoanForm" method="POST" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+                {# Hidden ID #}
+                <input type="hidden" id="editLoanId" name="id">
+
+                {# Read-only Info Section #}
+                <div style="background: #f9fafb; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <span style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Estudiante</span>
+                        <p id="editLoanStudent" style="font-size: 14px; font-weight: 500; color: #111827; margin: 4px 0 0 0;"></p>
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Libro</span>
+                        <p id="editLoanBook" style="font-size: 14px; font-weight: 500; color: #111827; margin: 4px 0 0 0;"></p>
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Tutor</span>
+                        <p id="editLoanTutor" style="font-size: 14px; font-weight: 500; color: #111827; margin: 4px 0 0 0;"></p>
+                    </div>
+                </div>
+
+                {# Status Select #}
+                <div>
+                    <label for="editLoanStatus" style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">Estado</label>
+                    <select id="editLoanStatus" name="status"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; cursor: pointer;">
+                        <option value="active">Activo</option>
+                        <option value="returned">Devuelto</option>
+                        <option value="overdue">Vencido</option>
+                        <option value="lost">Perdido</option>
+                    </select>
+                </div>
+
+                {# Date Fields Row #}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label for="editLoanDate" style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">Fecha Préstamo</label>
+                        <input type="date" id="editLoanDate" name="loan_date"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label for="editReturnDate" style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">Fecha Devolución</label>
+                        <input type="date" id="editReturnDate" name="return_date"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                {# Quick Action: Mark as Returned #}
+                <button type="button" id="markReturnedBtn"
+                        data-controller="loan-edit"
+                        data-action="click->loan-edit#markAsReturned"
+                        style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; background: #dbeafe; color: #1e40af; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s;"
+                        onmouseover="this.style.background='#bfdbfe'"
+                        onmouseout="this.style.background='#dbeafe'">
+                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Marcar como Devuelto
+                </button>
+            </form>
+
+            {# Footer #}
+            <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #e5e7eb; background: #fafafa;">
+                <button type="button" data-action="click->modal#close"
+                        style="padding: 10px 20px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                        onmouseover="this.style.background='#f9fafb'"
+                        onmouseout="this.style.background='white'">
+                    Cancelar
+                </button>
+                <button type="submit" form="editLoanForm"
+                        style="padding: 10px 20px; background: #9333ea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                        onmouseover="this.style.background='#7e22ce'"
+                        onmouseout="this.style.background='#9333ea'">
+                    Guardar Cambios
+                </button>
+            </div>
         </div>
     </div>
 
