@@ -26,12 +26,44 @@
     @media (min-width: 1280px) {
         .book-grid { grid-template-columns: repeat(6, 1fr); gap: 24px; }
     }
+
+    /* Modal styles */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.5);
+    }
+    .modal-overlay.open {
+        display: flex;
+    }
 </style>
 {% endblock %}
 
 {% block main_content %}
-    {# Page Title #}
-    <h1 class="page-title" style="font-family: Georgia, serif; text-align: center; color: #111827; margin-top: 0;">Todos os livros</h1>
+    {# Page Title with Create Button #}
+    <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px;">
+        <h1 class="page-title" style="font-family: Georgia, serif; text-align: center; color: #111827; margin: 0;">
+            Todos os livros
+        </h1>
+        <button
+            type="button"
+            data-controller="modal"
+            data-action="click->modal#open"
+            data-modal-target-param="#createLoanModal"
+            style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #9333ea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
+            onmouseover="this.style.background='#7c3aed'"
+            onmouseout="this.style.background='#9333ea'"
+        >
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Loan
+        </button>
+    </div>
 
     {# Search and Filters #}
     <div style="max-width: 896px; margin: 0 auto 24px auto;">
@@ -175,4 +207,139 @@
             {% endif %}
         </div>
     {% endif %}
+
+    {# Modal Create Loan #}
+    <div
+        id="createLoanModal"
+        data-controller="loan-form"
+        class="modal-overlay"
+    >
+        {# Modal Content #}
+        <div
+            style="background: white; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);"
+            data-action="click->modal#stopPropagation"
+        >
+            {# Header #}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+                <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0;">
+                    Crear Préstamo
+                </h2>
+                <button
+                    type="button"
+                    data-controller="modal"
+                    data-action="click->modal#close"
+                    style="background: none; border: none; cursor: pointer; padding: 4px; border-radius: 4px;"
+                    onmouseover="this.style.background='#f3f4f6'"
+                    onmouseout="this.style.background='transparent'"
+                >
+                    <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            {# Form Body #}
+            <form style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+                {# Tutor Select #}
+                <div>
+                    <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                        Tutor
+                    </label>
+                    <select
+                        data-loan-form-target="tutor"
+                        data-action="change->loan-form#filterStudents"
+                        style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; cursor: pointer;"
+                    >
+                        <option value="">Seleccionar tutor...</option>
+                        {% if tutors is defined %}
+                            {% for tutor in tutors %}
+                                <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                {# Student Select #}
+                <div>
+                    <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                        Estudiante
+                    </label>
+                    <select
+                        data-loan-form-target="student"
+                        style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; cursor: pointer;"
+                        disabled
+                    >
+                        <option value="">Primero seleccione un tutor...</option>
+                    </select>
+                </div>
+
+                {# Book Select #}
+                <div>
+                    <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                        Libro
+                    </label>
+                    <select
+                        data-loan-form-target="book"
+                        style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; cursor: pointer;"
+                    >
+                        <option value="">Seleccionar libro...</option>
+                        {% if availableBooks is defined %}
+                            {% for book in availableBooks %}
+                                <option value="{{ book.id }}">{{ book.title }} - {{ book.code }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                {# Date Fields Row #}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    {# Loan Date #}
+                    <div>
+                        <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                            Fecha Préstamo
+                        </label>
+                        <input
+                            type="date"
+                            data-loan-form-target="loanDate"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;"
+                        >
+                    </div>
+
+                    {# Return Date #}
+                    <div>
+                        <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                            Fecha Devolución
+                        </label>
+                        <input
+                            type="date"
+                            data-loan-form-target="returnDate"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;"
+                        >
+                    </div>
+                </div>
+            </form>
+
+            {# Footer #}
+            <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #e5e7eb; background: #fafafa; border-radius: 0 0 12px 12px;">
+                <button
+                    type="button"
+                    data-controller="modal"
+                    data-action="click->modal#close"
+                    style="padding: 10px 20px; background: white; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-weight: 500; color: #374151; cursor: pointer;"
+                    onmouseover="this.style.background='#f3f4f6'"
+                    onmouseout="this.style.background='white'"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    style="padding: 10px 20px; background: #9333ea; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; color: white; cursor: pointer;"
+                    onmouseover="this.style.background='#7c3aed'"
+                    onmouseout="this.style.background='#9333ea'"
+                >
+                    Crear Préstamo
+                </button>
+            </div>
+        </div>
+    </div>
 {% endblock %}
