@@ -6,6 +6,7 @@ use App\Entity\Student;
 use App\Repository\StudentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Pagerfanta;
+use Symfony\Component\Uid\Uuid;
 
 class StudentService
 {
@@ -22,9 +23,9 @@ class StudentService
         return $this->studentRepository->findAllStudents();
     }
 
-    public function getStudentById(int $id): ?Student
+    public function getStudentsByTutor(Uuid $id): array
     {
-        return $this->entityManager->getRepository(Student::class)->find($id);
+        return $this->studentRepository->findStudentByTutor($id);
     }
 
     public function filterStudentByName($filter = null): Pagerfanta

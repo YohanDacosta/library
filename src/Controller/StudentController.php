@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Services\StudentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
 
 class StudentController extends AbstractController
 {
@@ -40,5 +42,17 @@ class StudentController extends AbstractController
 //            'categories' => self::COLORED_CATEGORIES,
             'searchTerm' => $searchTerm
         ]);
+    }
+
+    #[Route('/get-students-by-tutor-id/{id}', name: 'app_get_students_by_tutor', methods: ['GET'])]
+    public function getStudentsByTutorId(Uuid $id): JsonResponse
+    {
+        $students = $this->studentService->getStudentsByTutor($id);
+        $data = array_map(fn($student) => [
+            'id' => $student->getId(),
+            'name' => $student->getFirstName() . " " . $student->getLastName(),
+        ], $students);
+
+        return new JsonResponse($data);
     }
 }
