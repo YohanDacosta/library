@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Student>
@@ -39,6 +40,17 @@ class StudentRepository extends ServiceEntityRepository
         }
 
         return New Pagerfanta(new ArrayAdapter([]));
+    }
+
+    public function findStudentByTutor(Uuid $idTutor): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.course', 'c')
+            ->join('c.tutors', 't')
+            ->where('t.id = :id')
+            ->setParameter('id', $idTutor, 'uuid')
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**
