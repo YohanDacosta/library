@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Services\BookService;
+use App\Services\StudentService;
+use App\Services\TutorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +20,12 @@ final class BookController extends AbstractController
         'lost' => 'bg-red-700',
     ];
     private BookService $bookService;
+    private TutorService $tutorService;
 
-    public function __construct(BookService $bookService)
+    public function __construct(BookService $bookService, TutorService $tutorService, StudentService $studentService)
     {
         $this->bookService = $bookService;
+        $this->tutorService = $tutorService;
     }
 
     #[Route('/', name: 'app_home')]
@@ -41,9 +45,12 @@ final class BookController extends AbstractController
         $books->setMaxPerPage(5);
         $books->setCurrentPage($request->query->get('page', 1));
 
+        $tutors = $this->tutorService->getTutors();
+
         return $this->render('home/index.html.twig', [
             'controller_name' => 'BookController',
             'books' => $books,
+            'tutors' => $tutors,
             'categories' => self::COLORED_CATEGORIES,
             'searchTerm' => $searchTerm
         ]);

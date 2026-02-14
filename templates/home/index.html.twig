@@ -40,29 +40,61 @@
     .modal-overlay.open {
         display: flex;
     }
+
+    /* Book Cart styles */
+    .book-cart {
+        position: fixed;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 320px;
+        max-height: 70vh;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        z-index: 40;
+        flex-direction: column;
+        display: none;
+    }
+
+    /* Mobile: Cart as bottom sheet */
+    @media (max-width: 1023px) {
+        .book-cart {
+            right: 16px;
+            left: 16px;
+            bottom: 16px;
+            top: auto;
+            transform: none;
+            width: auto;
+            max-height: 50vh;
+        }
+    }
+
+    /* Book card clickable styles */
+    .book-card-clickable {
+        cursor: pointer;
+        transition: transform 0.15s;
+    }
+    .book-card-clickable:hover {
+        transform: scale(1.02);
+    }
+    .book-card-unavailable {
+        opacity: 0.5;
+        cursor: default;
+    }
 </style>
 {% endblock %}
 
 {% block main_content %}
-    {# Page Title with Create Button #}
+<div data-controller="book-cart"
+     {% if tutors is defined %}
+     data-tutors="{{ tutors|map(t => {id: t.id, firstName: t.firstName, lastName: t.lastName})|json_encode|e('html_attr') }}"
+     {% endif %}>
+    {# Page Title #}
     <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px;">
         <h1 class="page-title" style="font-family: Georgia, serif; text-align: center; color: #111827; margin: 0;">
             Todos os livros
         </h1>
-        <button
-            type="button"
-            data-controller="modal"
-            data-action="click->modal#open"
-            data-modal-target-param="#createLoanModal"
-            style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #9333ea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
-            onmouseover="this.style.background='#7c3aed'"
-            onmouseout="this.style.background='#9333ea'"
-        >
-            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Create Loan
-        </button>
     </div>
 
     {# Search and Filters #}
@@ -115,7 +147,38 @@
     {# Book Grid #}
     <div class="book-grid" style="display: grid;">
         {% for book in books %}
-            <div>
+            {% set isAvailable = book.status.value == 'available' %}
+            {# Status badge colors #}
+            {% if book.status.value == 'available' %}
+                {% set statusBg = '#dcfce7' %}
+                {% set statusColor = '#166534' %}
+                {% set statusText = 'Disponible' %}
+            {% elseif book.status.value == 'loaned' %}
+                {% set statusBg = '#dbeafe' %}
+                {% set statusColor = '#1e40af' %}
+                {% set statusText = 'Prestado' %}
+            {% elseif book.status.value == 'reserved' %}
+                {% set statusBg = '#fef3c7' %}
+                {% set statusColor = '#92400e' %}
+                {% set statusText = 'Reservado' %}
+            {% elseif book.status.value == 'repaired' %}
+                {% set statusBg = '#f3e8ff' %}
+                {% set statusColor = '#7c3aed' %}
+                {% set statusText = 'En reparación' %}
+            {% else %}
+                {% set statusBg = '#fee2e2' %}
+                {% set statusColor = '#991b1b' %}
+                {% set statusText = 'Perdido' %}
+            {% endif %}
+
+            <div class="{{ isAvailable ? 'book-card-clickable' : 'book-card-unavailable' }}"
+                 {% if isAvailable %}
+                 data-action="click->book-cart#addBook"
+                 data-book-cart-id-param="{{ book.id }}"
+                 data-book-cart-title-param="{{ book.title }}"
+                 data-book-cart-author-param="{{ book.author }}"
+                 data-book-cart-code-param="{{ book.code }}"
+                 {% endif %}>
                 {# Book Cover Placeholder #}
                 <div style="aspect-ratio: 3/4; background: #e5e7eb; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center;">
                     <svg xmlns="http://www.w3.org/2000/svg" style="height: 36px; width: 36px; color: #9ca3af;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,7 +187,11 @@
                 </div>
                 {# Book Info #}
                 <h3 style="font-size: 13px; font-weight: 500; color: #111827; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ book.title }}</h3>
-                <p style="font-size: 11px; color: #6b7280; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ book.author }}</p>
+                <p style="font-size: 11px; color: #6b7280; margin: 0 0 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ book.author }}</p>
+                {# Status Badge #}
+                <span style="display: inline-block; padding: 2px 8px; background: {{ statusBg }}; color: {{ statusColor }}; font-size: 10px; font-weight: 500; border-radius: 9999px;">
+                    {{ statusText }}
+                </span>
             </div>
         {% endfor %}
     </div>
@@ -208,10 +275,87 @@
         </div>
     {% endif %}
 
+    {# Book Cart (Floating) #}
+    <div class="book-cart" data-book-cart-target="cart">
+        {# Header #}
+        <div style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg style="width: 20px; height: 20px; color: #9333ea;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <span style="font-size: 15px; font-weight: 600; color: #111827;">Nuevo Préstamo</span>
+            </div>
+            <span data-book-cart-target="cartCount" style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #9333ea; color: white; font-size: 12px; font-weight: 600; border-radius: 50%;">0</span>
+        </div>
+
+        {# Tutor Selection #}
+        <div style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6;">
+            <label style="display: block; font-size: 12px; font-weight: 500; color: #6b7280; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">
+                Tutor
+            </label>
+
+            {# Selected Tutor Display #}
+            <div data-book-cart-target="selectedTutor" style="display: none;"></div>
+
+            {# Tutor Search #}
+            <div data-tutor-search-container style="position: relative;">
+                <div style="display: flex; align-items: center; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 12px;">
+                    <svg style="width: 16px; height: 16px; color: #9ca3af; margin-right: 8px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input
+                        type="text"
+                        data-book-cart-target="tutorSearch"
+                        data-action="focus->book-cart#onTutorSearchFocus input->book-cart#onTutorSearchInput"
+                        placeholder="Buscar tutor..."
+                        style="flex: 1; border: none; background: transparent; outline: none; font-size: 13px; color: #374151; min-width: 0;"
+                    >
+                </div>
+
+                {# Tutor Dropdown #}
+                <div data-book-cart-target="tutorDropdown"
+                     style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 10;">
+                    <div data-book-cart-target="tutorList">
+                        {# Tutor list populated via JS #}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Books Label #}
+        <div style="padding: 12px 16px 0 16px;">
+            <label style="display: block; font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
+                Libros seleccionados
+            </label>
+        </div>
+
+        {# Cart Items #}
+        <div data-book-cart-target="cartItems" style="flex: 1; overflow-y: auto; padding: 8px 16px 16px 16px; display: flex; flex-direction: column; gap: 8px;">
+            {# Items se agregan via JS #}
+        </div>
+
+        {# Footer with Create Button #}
+        <div style="padding: 16px; border-top: 1px solid #e5e7eb;">
+            <button type="button"
+                    data-book-cart-target="createBtn"
+                    data-action="click->book-cart#openLoanModal"
+                    disabled
+                    style="width: 100%; padding: 12px 16px; background: #9333ea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                    onmouseover="if(!this.disabled) this.style.background='#7c3aed'"
+                    onmouseout="this.style.background='#9333ea'">
+                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Crear Préstamo
+            </button>
+        </div>
+    </div>
+
     {# Modal Create Loan #}
     <div
         id="createLoanModal"
         data-controller="loan-form"
+        data-loan-form-students-url-value="/get-students-by-tutor-id"
         class="modal-overlay"
     >
         {# Modal Content #}
@@ -273,22 +417,15 @@
                     </select>
                 </div>
 
-                {# Book Select #}
+                {# Selected Books (read-only from cart) #}
                 <div>
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
-                        Libro
+                        Libros a prestar
                     </label>
-                    <select
-                        data-loan-form-target="book"
-                        style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; cursor: pointer;"
-                    >
-                        <option value="">Seleccionar libro...</option>
-                        {% if availableBooks is defined %}
-                            {% for book in availableBooks %}
-                                <option value="{{ book.id }}">{{ book.title }} - {{ book.code }}</option>
-                            {% endfor %}
-                        {% endif %}
-                    </select>
+                    <div data-book-cart-target="booksList"
+                         style="display: flex; flex-direction: column; gap: 8px; max-height: 120px; overflow-y: auto; padding: 4px 0;">
+                        {# Se llena dinámicamente desde el carrito #}
+                    </div>
                 </div>
 
                 {# Date Fields Row #}
@@ -342,4 +479,5 @@
             </div>
         </div>
     </div>
+</div>{# End book-cart controller wrapper #}
 {% endblock %}

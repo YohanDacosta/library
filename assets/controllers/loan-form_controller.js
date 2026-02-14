@@ -13,7 +13,7 @@ export default class extends Controller {
         }
     }
 
-    filterStudents() {
+    async filterStudents() {
         const tutorId = this.tutorTarget.value;
         const studentSelect = this.studentTarget;
 
@@ -23,24 +23,41 @@ export default class extends Controller {
             return;
         }
 
-        // Enable student select
-        studentSelect.disabled = false;
+        // Show loading state
+        studentSelect.disabled = true;
         studentSelect.innerHTML = '<option value="">Cargando estudiantes...</option>';
 
-        // Get students data from data attribute (populated by backend)
-        const studentsData = this.element.dataset.students;
+        console.log(tutorId);
 
-        if (studentsData) {
-            const students = JSON.parse(studentsData);
-            const filtered = students.filter(s => s.tutorId === tutorId);
+        try {
+            // Fetch students from the API
+            const url = `${this.studentsUrlValue}/${tutorId}`;
+            const response = await fetch(url);
 
-            studentSelect.innerHTML = '<option value="">Seleccionar estudiante...</option>';
-            filtered.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.id;
-                option.textContent = student.name;
-                studentSelect.appendChild(option);
-            });
+            if (!response.ok) {
+                throw new Error('Error al cargar estudiantes');
+            }
+
+            const students = await response.json();
+
+            // Enable and populate student select
+            studentSelect.disabled = false;
+
+            if (students.length > 0) {
+                studentSelect.innerHTML = '<option value="">Seleccionar estudiante...</option>';
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = student.name;
+                    studentSelect.appendChild(option);
+                });
+            } else {
+                studentSelect.innerHTML = '<option value="">No hay estudiantes para este tutor</option>';
+            }
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            studentSelect.innerHTML = '<option value="">Error al cargar estudiantes</option>';
+            studentSelect.disabled = true;
         }
     }
 }
