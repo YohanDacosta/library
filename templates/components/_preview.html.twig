@@ -67,9 +67,19 @@
                         {% set statusText = 'Perdido' %}
                     {% endif %}
 
-                    <a href="#" style="display: grid; grid-template-columns: 48px 1fr 1fr 100px 120px; gap: 20px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s;"
+                    {% set isClickable = book.status.value == 'available' %}
+                    <a href="#"
+                       style="display: grid; grid-template-columns: 48px 1fr 1fr 100px 120px; gap: 20px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s; {{ not isClickable ? 'opacity: 0.6; cursor: default;' : '' }}"
+                       {% if isClickable %}
+                       data-action="click->book-cart#addBook"
+                       data-book-cart-id-param="{{ book.id }}"
+                       data-book-cart-title-param="{{ book.title }}"
+                       data-book-cart-author-param="{{ book.author }}"
+                       data-book-cart-code-param="{{ book.code }}"
                        onmouseover="this.style.background='#faf5ff'"
-                       onmouseout="this.style.background='transparent'">
+                       onmouseout="this.style.background='transparent'"
+                       {% endif %}
+                       onclick="event.preventDefault()">
                         {# Book cover image #}
                         <div style="width: 36px; height: 48px; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                             <img src="https://picsum.photos/seed/{{ book.code }}/72/96"
@@ -127,9 +137,19 @@
                     {% set statusText = 'Perdido' %}
                 {% endif %}
 
-                <a href="#" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: flex-start;"
+                {% set isClickable = book.status.value == 'available' %}
+                <a href="#"
+                   style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: flex-start; {{ not isClickable ? 'opacity: 0.6; cursor: default;' : '' }}"
+                   {% if isClickable %}
+                   data-action="click->book-cart#addBook"
+                   data-book-cart-id-param="{{ book.id }}"
+                   data-book-cart-title-param="{{ book.title }}"
+                   data-book-cart-author-param="{{ book.author }}"
+                   data-book-cart-code-param="{{ book.code }}"
                    onmouseover="this.style.background='#faf5ff'"
-                   onmouseout="this.style.background='transparent'">
+                   onmouseout="this.style.background='transparent'"
+                   {% endif %}
+                   onclick="event.preventDefault()">
                     {# Book cover image #}
                     <div style="width: 48px; height: 64px; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">
                         <img src="https://picsum.photos/seed/{{ book.code }}/96/128"
