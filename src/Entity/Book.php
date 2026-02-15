@@ -47,10 +47,10 @@ class Book
     private Collection $categories;
 
     /**
-     * @var Collection<int, Loan>
+     * @var Collection<int, LoanIteam>
      */
-    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'book')]
-    private Collection $loan;
+    #[ORM\OneToMany(targetEntity: LoanIteam::class, mappedBy: 'book', orphanRemoval: true)]
+    private Collection $loanIteams;
 
     /**
      * @throws RandomException
@@ -60,8 +60,9 @@ class Book
         $this->id = Uuid::v4();
         $this->created_at = new \DateTimeImmutable();
         $this->categories = new ArrayCollection();
-        $this->loan = new ArrayCollection();
         $this->code = time() . random_int(100, 999);
+        $this->status = BookStatusEnum::AVAILABLE;
+        $this->loanIteams = new ArrayCollection();
     }
 
     public function getId(): Uuid|null
@@ -177,38 +178,38 @@ class Book
         return $this;
     }
 
-    /**
-     * @return Collection<int, Loan>
-     */
-    public function getLoan(): Collection
+    public function __toString(): string
     {
-        return $this->loan;
+        return $this->title ?? '';
     }
 
-    public function addLoan(Loan $loan): static
+    /**
+     * @return Collection<int, LoanIteam>
+     */
+    public function getLoanIteams(): Collection
     {
-        if (!$this->loan->contains($loan)) {
-            $this->loan->add($loan);
-            $loan->setBook($this);
+        return $this->loanIteams;
+    }
+
+    public function addLoanIteam(LoanIteam $loanIteam): static
+    {
+        if (!$this->loanIteams->contains($loanIteam)) {
+            $this->loanIteams->add($loanIteam);
+            $loanIteam->setBook($this);
         }
 
         return $this;
     }
 
-    public function removeLoan(Loan $loan): static
+    public function removeLoanIteam(LoanIteam $loanIteam): static
     {
-        if ($this->loan->removeElement($loan)) {
+        if ($this->loanIteams->removeElement($loanIteam)) {
             // set the owning side to null (unless already changed)
-            if ($loan->getBook() === $this) {
-                $loan->setBook(null);
+            if ($loanIteam->getBook() === $this) {
+                $loanIteam->setBook(null);
             }
         }
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->title ?? '';
     }
 }
