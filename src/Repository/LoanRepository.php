@@ -48,6 +48,11 @@ class LoanRepository extends ServiceEntityRepository
         return new Pagerfanta(new ArrayAdapter($query));
     }
 
+    public function createLoan($data): void
+    {
+        $this->getEntityManager()->persist($data);
+    }
+
     //    /**
     //     * @return Loan[] Returns an array of Loan objects
     //     */

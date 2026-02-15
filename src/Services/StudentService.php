@@ -2,19 +2,15 @@
 
 namespace App\Services;
 
-use App\Entity\Student;
 use App\Repository\StudentRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Uid\Uuid;
 
 class StudentService
 {
-    private EntityManagerInterface $entityManager;
     private StudentRepository $studentRepository;
-    public function __construct(EntityManagerInterface $entityManager, StudentRepository $studentRepository)
+    public function __construct(StudentRepository $studentRepository)
     {
-        $this->entityManager = $entityManager;
         $this->studentRepository = $studentRepository;
     }
 
