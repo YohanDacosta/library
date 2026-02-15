@@ -72,9 +72,12 @@ class LoanController extends AbstractController
         }
 
         try {
+            $student = $this->studentService->getStudentById($data["studentId"]);
+            $tutor = $this->tutorService->getTutorById($data["tutorId"]);
+
             $loan = new Loan();
-            $loan->setStudent($data["studentId"]);
-            $loan->setTutor($data["tutorId"]);
+            $loan->setStudent($student);
+            $loan->setTutor($tutor);
             $loan->setLoanDate(new \DateTimeImmutable($data["loanDate"]));
             $loan->setReturnDate(new \DateTimeImmutable($data["returnDate"]));
 
@@ -85,9 +88,6 @@ class LoanController extends AbstractController
                 $loan->addLoanIteam($loanItemBook);
                 $book->setStatus(BookStatusEnum::LOANED);
             }
-
-            $student = $this->studentService->getStudentById($data["studentId"]);
-            $tutor = $this->tutorService->getTutorById($data["tutorId"]);
 
             $loan->setStudent($student);
             $loan->setTutor($tutor);
