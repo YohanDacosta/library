@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Entity\Tutor;
 use App\Repository\TutorRepository;
+use Symfony\Component\Uid\Uuid;
 
 class TutorService
 {
@@ -15,5 +17,10 @@ class TutorService
 
     public function getTutors(): array {
         return $this->tutorRepository->findAll();
+    }
+
+    public function getTutorById(Uuid $id): ?Tutor
+    {
+        return $this->tutorRepository->find($id);
     }
 }

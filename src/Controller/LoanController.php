@@ -3,7 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Loan;
+use App\Entity\LoanIteam;
+use App\Enums\BookStatusEnum;
+use App\Services\BookService;
 use App\Services\LoanService;
+use App\Services\StudentService;
+use App\Services\TutorService;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,10 +20,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class LoanController extends AbstractController
 {
     private LoanService $loanService;
+    private BookService $bookService;
+    private StudentService $studentService;
+    private TutorService $tutorService;
     private ValidatorInterface $validator;
-    public function __construct(LoanService $loanService, ValidatorInterface $validator)
+    public function __construct(LoanService $loanService, BookService $bookService, StudentService $studentService, TutorService $tutorService, ValidatorInterface $validator)
     {
         $this->loanService = $loanService;
+        $this->bookService = $bookService;
+        $this->studentService = $studentService;
+        $this->tutorService = $tutorService;
         $this->validator = $validator;
     }
 
@@ -47,34 +59,52 @@ class LoanController extends AbstractController
         ]);
     }
 
-    #[Route("/loan/create", name: "app_loan_create")]
+    /**
+     * @throws Exception
+     */
+    #[Route("/loan/create", name: "app_loan_create", methods: ["POST"])]
     public function createLoan(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
         if (!$data) {
-            return new JsonResponse(['success' => false, 'message' => 'Error', 'data' => null]);
+            return new JsonResponse(['error' => 'Datos inválidos', Response::HTTP_BAD_REQUEST]);
         }
 
-//        $loan = new Loan();
-//        $loan->setBook($data["bookIds"]);
-//        $loan->setStudent($data["studentId"]);
-//        $loan->setTutor($data["tutorId"]);
-//        $loan->setLoanDate($data["loanDate"]);
-//        $loan->setReturnDate($data["returnDate"]);
-//
-//        $errors = $this->validator->validate($loan);
-//
-//        if (count($errors) > 0) {
-//            $errorsString = (string) $errors;
-//
-//            return new JsonResponse(['success' => false, 'message' => $errorsString, 'data' => null]);
-//        }
-//
-//        $this->loanService->createLoan($loan);
+        try {
+            $loan = new Loan();
+            $loan->setStudent($data["studentId"]);
+            $loan->setTutor($data["tutorId"]);
+            $loan->setLoanDate(new \DateTimeImmutable($data["loanDate"]));
+            $loan->setReturnDate(new \DateTimeImmutable($data["returnDate"]));
 
+            foreach ($data["bookIds"] as $bookId) {
+                $book = $this->bookService->getBookById($bookId);
+                $loanItemBook = new LoanIteam();
+                $loanItemBook->setBook($book);
+                $loan->addLoanIteam($loanItemBook);
+                $book->setStatus(BookStatusEnum::LOANED);
+            }
 
+            $student = $this->studentService->getStudentById($data["studentId"]);
+            $tutor = $this->tutorService->getTutorById($data["tutorId"]);
 
-        return new JsonResponse(['success' => true, 'message' => 'Préstamo creado', 'data' => $data]);
+            $loan->setStudent($student);
+            $loan->setTutor($tutor);
+
+            $errors = $this->validator->validate($loan);
+
+            if (count($errors) > 0) {
+                $errorsString = (string) $errors;
+
+                return new JsonResponse(['error' => $errorsString, Response::HTTP_BAD_REQUEST]);
+            }
+
+            $this->loanService->createLoan($loan);
+
+            return new JsonResponse(['success' => true, 'message' => 'Préstamo creado', Response::HTTP_CREATED]);
+        } catch (Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR]);
+        }
     }
 }

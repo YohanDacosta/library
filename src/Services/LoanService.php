@@ -6,6 +6,7 @@ use App\Entity\Loan;
 use App\Repository\LoanRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Pagerfanta;
+use Symfony\Component\Uid\Uuid;
 
 class LoanService
 {
@@ -22,7 +23,7 @@ class LoanService
         return $this->loanRepository->findAllLoans();
     }
 
-    public function getLoanById(int $id): ?Loan
+    public function getLoanById(Uuid $id): ?Loan
     {
         return $this->entityManager->getRepository(Loan::class)->find($id);
     }
