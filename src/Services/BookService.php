@@ -6,6 +6,7 @@ use App\Entity\Book;
 use App\Repository\BookRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Pagerfanta;
+use Symfony\Component\Uid\Uuid;
 
 class BookService
 {
@@ -22,7 +23,7 @@ class BookService
         return $this->bookRepository->findAllBooks();
     }
 
-    public function getBookById(int $id): ?Book
+    public function getBookById(Uuid $id): ?Book
     {
         return $this->entityManager->getRepository(Book::class)->find($id);
     }
