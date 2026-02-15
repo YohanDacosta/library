@@ -25,3 +25,12 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && mv composer.phar /usr/bin/composer \
     && php -r "unlink('composer-setup.php');"
+
+# Xdebug
+RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del $PHPIZE_DEPS linux-headers \
+    && rm -rf /tmp/pear
+
+COPY .docker/90-xdebug.ini "${PHP_INI_DIR}/conf.d"
