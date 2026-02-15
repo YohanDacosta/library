@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enums\LoanEnum;
 use App\Repository\LoanRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -34,15 +36,17 @@ class Loan
 
     #[ORM\ManyToOne(inversedBy: 'loan')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Book $book = null;
-
-    #[ORM\ManyToOne(inversedBy: 'loan')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Student $student = null;
 
     #[ORM\ManyToOne(inversedBy: 'loan')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Tutor $tutor = null;
+
+    /**
+     * @var Collection<int, LoanIteam>
+     */
+    #[ORM\OneToMany(targetEntity: LoanIteam::class, mappedBy: 'loan', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $loanIteams;
 
     public function __construct()
     {
@@ -50,6 +54,7 @@ class Loan
         $this->status = LoanEnum::ACTIVE;
         $this->loan_date = new \DateTimeImmutable();
         $this->created_at = new \DateTimeImmutable();
+        $this->loanIteams = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -129,18 +134,6 @@ class Loan
         return $this;
     }
 
-    public function getBook(): ?Book
-    {
-        return $this->book;
-    }
-
-    public function setBook(?Book $book): static
-    {
-        $this->book = $book;
-
-        return $this;
-    }
-
     public function getStudent(): ?Student
     {
         return $this->student;
@@ -161,6 +154,36 @@ class Loan
     public function setTutor(?Tutor $tutor): static
     {
         $this->tutor = $tutor;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LoanIteam>
+     */
+    public function getLoanIteams(): Collection
+    {
+        return $this->loanIteams;
+    }
+
+    public function addLoanIteam(LoanIteam $loanIteam): static
+    {
+        if (!$this->loanIteams->contains($loanIteam)) {
+            $this->loanIteams->add($loanIteam);
+            $loanIteam->setLoan($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLoanIteam(LoanIteam $loanIteam): static
+    {
+        if ($this->loanIteams->removeElement($loanIteam)) {
+            // set the owning side to null (unless already changed)
+            if ($loanIteam->getLoan() === $this) {
+                $loanIteam->setLoan(null);
+            }
+        }
 
         return $this;
     }
