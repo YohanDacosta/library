@@ -29,10 +29,9 @@ class BookIntegrationTest extends KernelTestCase
     public function testCreateBook()
     {
         $book = new Book();
-        $book->setTitle("Django2");
-        $book->setAuthor("Antonio Mele");
-        $book->setCode("9788425727480");
-        $book->setCopiesAvailable(20);
+        $book->setTitle("Python");
+        $book->setAuthor("Brian Schan");
+        $book->setCode("9788425727482");
 
         $this->entityManager->persist($book);
         $this->entityManager->flush();
@@ -42,13 +41,13 @@ class BookIntegrationTest extends KernelTestCase
 
     public function testGetBook()
     {
-        $book = $this->entityManager->getRepository(Book::class)->find("192877fe-9be3-4670-9478-d0a6c31622cd");
+        $book = $this->entityManager->getRepository(Book::class)->find("e23c6040-e57e-423d-8263-517e8826b14a");
         $this->assertInstanceOf(Book::class, $book);
     }
 
     public function testUpdateBook()
     {
-        $book = $this->entityManager->getRepository(Book::class)->findOneBy(["id" => "192877fe-9be3-4670-9478-d0a6c31622cd"]);
+        $book = $this->entityManager->getRepository(Book::class)->findOneBy(["id" => "e23c6040-e57e-423d-8263-517e8826b14a"]);
 
         $this->assertInstanceOf(Book::class, $book);
         $book->setTitle("Django3");
@@ -58,7 +57,7 @@ class BookIntegrationTest extends KernelTestCase
 
     public function testDeleteBook()
     {
-        $book = $this->entityManager->getRepository(Book::class)->find("2356f290-1cab-4e13-9034-257036fbecdb");
+        $book = $this->entityManager->getRepository(Book::class)->find("d4e5b107-03d8-4ba9-8422-f8dd112063c6");
 
         if ($book instanceof Book) {
             $this->entityManager->remove($book);

@@ -17,11 +17,21 @@ export default class extends Controller {
         this.updateTutorUI();
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', this.handleOutsideClick.bind(this));
+        this.handleOutsideClick = this.handleOutsideClick.bind(this);
+        document.addEventListener('click', this.handleOutsideClick);
+
+        // Listen for loan created event to clear cart
+        this.handleLoanCreated = this.handleLoanCreated.bind(this);
+        window.addEventListener('loan:created', this.handleLoanCreated);
     }
 
     disconnect() {
-        document.removeEventListener('click', this.handleOutsideClick.bind(this));
+        document.removeEventListener('click', this.handleOutsideClick);
+        window.removeEventListener('loan:created', this.handleLoanCreated);
+    }
+
+    handleLoanCreated() {
+        this.clearCart();
     }
 
     loadTutorsData() {

@@ -31,4 +31,10 @@ class LoanService
     {
         return $this->loanRepository->filterLoanByNameBook($filter);
     }
+
+    public function createLoan($data): void
+    {
+        $this->loanRepository->createLoan($data);
+        $this->entityManager->flush();
+    }
 }

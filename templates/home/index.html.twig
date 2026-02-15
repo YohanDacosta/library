@@ -356,6 +356,7 @@
         id="createLoanModal"
         data-controller="loan-form"
         data-loan-form-students-url-value="/get-students-by-tutor-id"
+        data-loan-form-create-url-value="/loan/create"
         class="modal-overlay"
     >
         {# Modal Content #}
@@ -383,7 +384,12 @@
             </div>
 
             {# Form Body #}
-            <form style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+            <form data-action="submit->loan-form#submit" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+                {# Error Messages #}
+                <div data-loan-form-target="errorMessage"
+                     style="display: none; padding: 12px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-size: 13px;">
+                </div>
+
                 {# Tutor Select #}
                 <div>
                     <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">
@@ -438,6 +444,7 @@
                         <input
                             type="date"
                             data-loan-form-target="loanDate"
+                            data-action="change->loan-form#updateReturnDate"
                             style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;"
                         >
                     </div>
@@ -469,7 +476,9 @@
                     Cancelar
                 </button>
                 <button
-                    type="submit"
+                    type="button"
+                    data-loan-form-target="submitBtn"
+                    data-action="click->loan-form#submit"
                     style="padding: 10px 20px; background: #9333ea; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; color: white; cursor: pointer;"
                     onmouseover="this.style.background='#7c3aed'"
                     onmouseout="this.style.background='#9333ea'"
