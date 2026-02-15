@@ -20,9 +20,9 @@ class StudentService
         return $this->studentRepository->findAllStudents();
     }
 
-    public function getStudentById(Uuid $id): ?Student
+    public function getStudentById(String $id): ?Student
     {
-        return $this->studentRepository->find($id);
+        return $this->studentRepository->find(Uuid::fromString($id));
     }
 
     public function getStudentsByTutor(Uuid $id): array

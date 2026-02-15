@@ -23,9 +23,9 @@ class BookService
         return $this->bookRepository->findAllBooks();
     }
 
-    public function getBookById(Uuid $id): ?Book
+    public function getBookById(String $id): ?Book
     {
-        return $this->entityManager->getRepository(Book::class)->find($id);
+        return $this->entityManager->getRepository(Book::class)->find(Uuid::fromString($id));
     }
 
     public function filterBookByName($filter = null): Pagerfanta

@@ -30,8 +30,80 @@ export default class extends Controller {
         window.removeEventListener('loan:created', this.handleLoanCreated);
     }
 
-    handleLoanCreated() {
+    handleLoanCreated(event) {
+        const loanedBookIds = this.books.map(b => b.id);
+
+        // Update book cards in the grid to show as loaned
+        this.updateBookCardsStatus(loanedBookIds);
+
+        // Show success message
+        this.showSuccessMessage('Préstamo creado exitosamente');
+
+        // Clear cart
         this.clearCart();
+    }
+
+    updateBookCardsStatus(bookIds) {
+        bookIds.forEach(bookId => {
+            // Find the book card by data attribute
+            const bookCard = this.element.querySelector(`[data-book-cart-id-param="${bookId}"]`);
+
+            if (bookCard) {
+                // Remove clickable behavior
+                bookCard.classList.remove('book-card-clickable');
+                bookCard.classList.add('book-card-unavailable');
+                bookCard.removeAttribute('data-action');
+                bookCard.removeAttribute('data-book-cart-id-param');
+                bookCard.removeAttribute('data-book-cart-title-param');
+                bookCard.removeAttribute('data-book-cart-author-param');
+                bookCard.removeAttribute('data-book-cart-code-param');
+
+                // Update status badge
+                const statusBadge = bookCard.querySelector('span:last-child');
+                if (statusBadge) {
+                    statusBadge.textContent = 'Prestado';
+                    statusBadge.style.background = '#dbeafe';
+                    statusBadge.style.color = '#1e40af';
+                }
+            }
+        });
+    }
+
+    showSuccessMessage(message) {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #166534;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        `;
+        toast.innerHTML = `
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            ${message}
+        `;
+
+        document.body.appendChild(toast);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.3s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     loadTutorsData() {

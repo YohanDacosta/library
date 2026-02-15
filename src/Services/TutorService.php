@@ -19,8 +19,8 @@ class TutorService
         return $this->tutorRepository->findAll();
     }
 
-    public function getTutorById(Uuid $id): ?Tutor
+    public function getTutorById(String $id): ?Tutor
     {
-        return $this->tutorRepository->find($id);
+        return $this->tutorRepository->find(Uuid::fromString($id));
     }
 }
