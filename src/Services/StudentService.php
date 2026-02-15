@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\Student;
 use App\Repository\StudentRepository;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\Uid\Uuid;
@@ -17,6 +18,11 @@ class StudentService
     public function getStudents(): Pagerfanta
     {
         return $this->studentRepository->findAllStudents();
+    }
+
+    public function getStudentById(Uuid $id): ?Student
+    {
+        return $this->studentRepository->find($id);
     }
 
     public function getStudentsByTutor(Uuid $id): array
