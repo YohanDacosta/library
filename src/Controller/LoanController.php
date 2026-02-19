@@ -107,4 +107,18 @@ class LoanController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR]);
         }
     }
+
+    #[Route("/loan/update", name: "app_loan_update", methods: ["PUT"])]
+    public function updateLoan(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return new JsonResponse(['error' => 'Datos inválidos', Response::HTTP_BAD_REQUEST]);
+        }
+
+
+
+        return new JsonResponse(['success' => true, 'message' => 'Préstamo creado', Response::HTTP_CREATED]);
+    }
 }
