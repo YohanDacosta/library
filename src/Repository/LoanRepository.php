@@ -3,11 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Loan;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
+use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
-use Pagerfanta\Pagerfanta;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Loan>
@@ -27,6 +28,11 @@ class LoanRepository extends ServiceEntityRepository
         return New Pagerfanta(new QueryAdapter($query));
     }
 
+    public function getLoanById(Uuid $id): ?Loan
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
+
     public function filterLoanByNameBook($filter): Pagerfanta
     {
         if ($filter === null || $filter === "") {
@@ -36,13 +42,13 @@ class LoanRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('l')
             ->select('DISTINCT l')
             ->join('l.student', 's')
-            ->join('l.book', 'b')
             ->join('l.tutor', 't')
+            ->join('l.loanIteams', 'ls')
+            ->join('ls.book', 'b')
             ->where('s.first_name LIKE :filter')
             ->orWhere('s.last_name LIKE :filter')
-            ->orWhere('b.title LIKE :filter')
             ->setParameter('filter', "%{$filter}%")
-            ->setMaxResults(5)
+            ->setMaxResults(24)
             ->getQuery()
             ->getResult();
         return new Pagerfanta(new ArrayAdapter($query));

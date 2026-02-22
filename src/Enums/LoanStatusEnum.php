@@ -2,10 +2,9 @@
 
 namespace App\Enums;
 
-enum LoanEnum: string
+enum LoanStatusEnum: string
 {
     case ACTIVE = 'active';
     case RETURNED = 'returned';
     case OVERDUE = 'overdue';
-    case LOST = 'lost';
 }

@@ -104,23 +104,16 @@
             {# Table rows #}
             <div>
                 {% for loan in loans %}
+                {% if loan.status.value != 'returned' %}
                     {# Status badge colors #}
                     {% if loan.status.value == 'active' %}
                         {% set statusBg = '#dcfce7' %}
                         {% set statusColor = '#166534' %}
                         {% set statusText = 'Activo' %}
-                    {% elseif loan.status.value == 'returned' %}
-                        {% set statusBg = '#dbeafe' %}
-                        {% set statusColor = '#1e40af' %}
-                        {% set statusText = 'Devuelto' %}
-                    {% elseif loan.status.value == 'overdue' %}
+                    {% else %}
                         {% set statusBg = '#fef3c7' %}
                         {% set statusColor = '#92400e' %}
                         {% set statusText = 'Vencido' %}
-                    {% else %}
-                        {% set statusBg = '#fee2e2' %}
-                        {% set statusColor = '#991b1b' %}
-                        {% set statusText = 'Perdido' %}
                     {% endif %}
 
                     <div style="display: grid; grid-template-columns: 1fr 1.5fr 100px 100px 110px 110px 60px; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s; cursor: pointer;"
@@ -134,7 +127,8 @@
                          data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
                          data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
                          data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
-                         data-loan-edit-status-value="{{ loan.status.value }}">
+                         data-loan-edit-status-value="{{ loan.status.value }}"
+                         >
                         {# Student Name #}
                         <span style="font-size: 14px; font-weight: 500; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             {{ loan.student.firstName }} {{ loan.student.lastName }}
@@ -178,6 +172,7 @@
                             </svg>
                         </button>
                     </div>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -185,23 +180,16 @@
         {# Mobile: Card layout #}
         <div class="loans-cards">
             {% for loan in loans %}
+            {% if loan.status.value != 'returned' %}
                 {# Status badge colors #}
                 {% if loan.status.value == 'active' %}
                     {% set statusBg = '#dcfce7' %}
                     {% set statusColor = '#166534' %}
                     {% set statusText = 'Activo' %}
-                {% elseif loan.status.value == 'returned' %}
-                    {% set statusBg = '#dbeafe' %}
-                    {% set statusColor = '#1e40af' %}
-                    {% set statusText = 'Devuelto' %}
-                {% elseif loan.status.value == 'overdue' %}
+                {% else %}
                     {% set statusBg = '#fef3c7' %}
                     {% set statusColor = '#92400e' %}
                     {% set statusText = 'Vencido' %}
-                {% else %}
-                    {% set statusBg = '#fee2e2' %}
-                    {% set statusColor = '#991b1b' %}
-                    {% set statusText = 'Perdido' %}
                 {% endif %}
 
                 <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;"
@@ -215,7 +203,8 @@
                      data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
                      data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
                      data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
-                     data-loan-edit-status-value="{{ loan.status.value }}">
+                     data-loan-edit-status-value="{{ loan.status.value }}"
+                     >
                     {# Student Name #}
                     <h4 style="font-size: 15px; font-weight: 500; color: #111827; margin: 0;">
                         {{ loan.student.firstName }} {{ loan.student.lastName }}
@@ -256,6 +245,7 @@
                         </span>
                     </div>
                 </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -281,7 +271,7 @@
             </div>
 
             {# Form Body #}
-            <form id="editLoanForm" method="POST" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+            <form id="editLoanForm" method="POST" onsubmit="return false;" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
                 {# Hidden ID #}
                 <input type="hidden" id="editLoanId" name="id">
 
@@ -314,8 +304,6 @@
                             style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; cursor: pointer;">
                         <option value="active">Activo</option>
                         <option value="returned">Devuelto</option>
-                        <option value="overdue">Vencido</option>
-                        <option value="lost">Perdido</option>
                     </select>
                 </div>
 
@@ -323,8 +311,8 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div>
                         <label for="editLoanDate" style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">Fecha Préstamo</label>
-                        <input type="date" id="editLoanDate" name="loan_date"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                        <input type="date" id="editLoanDate" name="loan_date" readonly
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; color: #6b7280; background: #f9fafb; box-sizing: border-box; cursor: not-allowed;">
                     </div>
                     <div>
                         <label for="editReturnDate" style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">Fecha Devolución</label>
@@ -353,7 +341,7 @@
                         onmouseout="this.style.background='white'">
                     Cancelar
                 </button>
-                <button type="submit" form="editLoanForm"
+                <button type="button" id="submitLoanBtn"
                         style="padding: 10px 20px; background: #9333ea; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
                         onmouseover="this.style.background='#7e22ce'"
                         onmouseout="this.style.background='#9333ea'">
