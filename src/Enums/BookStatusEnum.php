@@ -6,7 +6,6 @@ enum BookStatusEnum: string
 {
     case AVAILABLE = 'available';
     case LOANED = 'loaned';
-    case RESERVED = 'reserved';
     case REPAIRED = 'repaired';
     case LOST = 'lost';
 }

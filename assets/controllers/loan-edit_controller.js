@@ -30,8 +30,10 @@ export default class extends Controller {
         // Parse and populate books with status controls
         this.books = this.booksValue ? JSON.parse(this.booksValue) : [];
         this.bookStatuses = {};
+        this.originalBookStatuses = {}; // Store original statuses to track changes
         this.books.forEach(book => {
             this.bookStatuses[book.id] = book.status;
+            this.originalBookStatuses[book.id] = book.status;
         });
         this.renderBooks();
 
@@ -40,19 +42,20 @@ export default class extends Controller {
         document.getElementById('editReturnDate').value = this.returnDateValue;
         document.getElementById('editLoanStatus').value = this.statusValue;
 
-        // Show/hide "Mark as Returned" button based on current status
+        // Show/hide "Mark as Returned" button - only show if there are books in 'loaned' status
         const markReturnedBtn = document.getElementById('markReturnedBtn');
         if (markReturnedBtn) {
-            markReturnedBtn.style.display = this.statusValue === 'returned' ? 'none' : 'flex';
+            const hasLoanedBooks = Object.values(this.bookStatuses).some(s => s === 'loaned');
+            markReturnedBtn.style.display = hasLoanedBooks ? 'flex' : 'none';
             // Remove old listener and add new one
             markReturnedBtn.replaceWith(markReturnedBtn.cloneNode(true));
             document.getElementById('markReturnedBtn').addEventListener('click', () => this.markAsReturned());
         }
 
-        // Connect form submit
-        const form = document.getElementById('editLoanForm');
-        if (form) {
-            form.onsubmit = (e) => this.submitForm(e);
+        // Connect submit button
+        const submitBtn = document.getElementById('submitLoanBtn');
+        if (submitBtn) {
+            submitBtn.onclick = () => this.submitForm();
         }
 
         // Open modal
@@ -78,21 +81,24 @@ export default class extends Controller {
 
         booksContainer.innerHTML = this.books.map(book => {
             const currentStatus = this.bookStatuses[book.id];
+            const isEditable = currentStatus === 'loaned';
 
             return `
                 <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px;" data-book-id="${book.id}">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;${isEditable ? ' margin-bottom: 10px;' : ''}">
                         <span style="font-size: 14px; font-weight: 500; color: #111827;">${this.escapeHtml(book.title)}</span>
                         <span class="book-status-badge" style="font-size: 11px; padding: 2px 8px; background: ${statusConfig[currentStatus]?.bg || '#f3f4f6'}; color: ${statusConfig[currentStatus]?.color || '#374151'}; border-radius: 9999px; font-weight: 500;">
                             ${statusConfig[currentStatus]?.label || currentStatus}
                         </span>
                     </div>
+                    ${isEditable ? `
                     <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                         ${this.renderStatusButton(book.id, 'loaned', 'Mantener', currentStatus)}
                         ${this.renderStatusButton(book.id, 'available', 'Devolver', currentStatus)}
                         ${this.renderStatusButton(book.id, 'lost', 'Perdido', currentStatus)}
                         ${this.renderStatusButton(book.id, 'repaired', 'Reparación', currentStatus)}
                     </div>
+                    ` : ''}
                 </div>
             `;
         }).join('');
@@ -152,21 +158,50 @@ export default class extends Controller {
     }
 
     updateBookStatus(bookId, newStatus) {
+        // Only allow changes if current status is 'loaned'
+        if (this.bookStatuses[bookId] !== 'loaned') {
+            return;
+        }
+
         this.bookStatuses[bookId] = newStatus;
         this.renderBooks();
 
-        // Check if all books are returned
+        const loanStatusSelect = document.getElementById('editLoanStatus');
+        const returnDateInput = document.getElementById('editReturnDate');
+        const markReturnedBtn = document.getElementById('markReturnedBtn');
+
+        // Check if there are still books in 'loaned' status
+        const hasLoanedBooks = Object.values(this.bookStatuses).some(s => s === 'loaned');
+        // Check if all books are returned (available)
         const allReturned = Object.values(this.bookStatuses).every(s => s === 'available');
-        if (allReturned) {
-            document.getElementById('editLoanStatus').value = 'returned';
-            document.getElementById('editReturnDate').value = new Date().toISOString().split('T')[0];
+
+        if (!hasLoanedBooks) {
+            // No more loaned books - set status to returned
+            loanStatusSelect.value = 'returned';
+            if (!returnDateInput.value) {
+                returnDateInput.value = new Date().toISOString().split('T')[0];
+            }
+            if (markReturnedBtn) {
+                markReturnedBtn.style.display = 'none';
+            }
+        } else {
+            // There are still loaned books
+            if (loanStatusSelect.value === 'returned') {
+                loanStatusSelect.value = 'active';
+                returnDateInput.value = '';
+            }
+            if (markReturnedBtn) {
+                markReturnedBtn.style.display = 'flex';
+            }
         }
     }
 
     markAsReturned() {
-        // Set all books to available
+        // Set only 'loaned' books to available
         Object.keys(this.bookStatuses).forEach(bookId => {
-            this.bookStatuses[bookId] = 'available';
+            if (this.bookStatuses[bookId] === 'loaned') {
+                this.bookStatuses[bookId] = 'available';
+            }
         });
         this.renderBooks();
 
@@ -184,16 +219,40 @@ export default class extends Controller {
     }
 
     getBookStatusChanges() {
-        return Object.entries(this.bookStatuses).map(([bookId, status]) => ({
-            bookId,
-            status
-        }));
+        // Only return books whose status actually changed
+        return Object.entries(this.bookStatuses)
+            .filter(([bookId, status]) => status !== this.originalBookStatuses[bookId])
+            .map(([bookId, status]) => ({
+                bookId,
+                status
+            }));
     }
 
-    async submitForm(event) {
-        event.preventDefault();
+    async submitForm() {
+        const status = document.getElementById('editLoanStatus').value;
+        const returnDate = document.getElementById('editReturnDate').value;
+        const hasLoanedBooks = Object.values(this.bookStatuses).some(s => s === 'loaned');
+        const anyBookDelivered = Object.values(this.bookStatuses).some(s => s !== 'loaned');
 
-        const submitBtn = document.querySelector('#editLoanModal button[type="submit"]');
+        // Validation: if any book was delivered (returned/lost/repaired), return date is required
+        if (anyBookDelivered && !returnDate) {
+            this.showErrorMessage('La fecha de devolución es obligatoria cuando hay libros entregados');
+            return;
+        }
+
+        // Validation: if status is "returned", no books should be in 'loaned' status
+        if (status === 'returned' && hasLoanedBooks) {
+            this.showErrorMessage('Todos los libros deben estar entregados para marcar el préstamo como devuelto');
+            return;
+        }
+
+        // Validation: if no books are loaned (all delivered), status must be "returned"
+        if (!hasLoanedBooks && status !== 'returned') {
+            this.showErrorMessage('Si todos los libros están entregados, el estado debe ser "Devuelto"');
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitLoanBtn');
         const originalText = submitBtn ? submitBtn.textContent : '';
         if (submitBtn) {
             submitBtn.disabled = true;
@@ -202,9 +261,9 @@ export default class extends Controller {
 
         const data = {
             loanId: document.getElementById('editLoanId').value,
-            status: document.getElementById('editLoanStatus').value,
+            status: status,
             loanDate: document.getElementById('editLoanDate').value,
-            returnDate: document.getElementById('editReturnDate').value,
+            returnDate: returnDate,
             books: this.getBookStatusChanges()
         };
 
@@ -289,7 +348,7 @@ export default class extends Controller {
             font-size: 14px;
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
             align-items: center;
             gap: 8px;
