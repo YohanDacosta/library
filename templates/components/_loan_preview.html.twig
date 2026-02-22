@@ -9,6 +9,19 @@
         <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Intenta con otro término de búsqueda</p>
     </div>
 {% else %}
+    {% set loans = loans|filter(loan => loan.status.value != 'returned') %}
+
+    {% if loans is empty %}
+        <div style="padding: 32px; text-align: center;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #f3f4f6; margin-bottom: 16px;">
+                <svg style="height: 32px; width: 32px; color: #9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">No se encontraron préstamos activos</p>
+            <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Intenta con otro término de búsqueda</p>
+        </div>
+    {% else %}
     <style>
         .loan-search-results-table { display: none; }
         .loan-search-results-cards { display: block; }
@@ -35,7 +48,7 @@
             {# Table header #}
             <div style="display: grid; grid-template-columns: 1fr 1fr 100px 100px 110px 110px; gap: 20px; padding: 12px 16px; background: #fafafa; border-bottom: 1px solid #e5e7eb; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">
                 <span>Estudiante</span>
-                <span>Libro</span>
+                <span>Libros</span>
                 <span>Tutor</span>
                 <span>Estado</span>
                 <span>F. Préstamo</span>
@@ -64,18 +77,31 @@
                         {% set statusText = 'Perdido' %}
                     {% endif %}
 
-                    <a href="#" style="display: grid; grid-template-columns: 1fr 1fr 100px 100px 110px 110px; gap: 20px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s;"
-                       onmouseover="this.style.background='#faf5ff'"
-                       onmouseout="this.style.background='transparent'">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 100px 100px 110px 110px; gap: 20px; padding: 12px 16px; border-bottom: 1px solid #f3f4f6; align-items: center; transition: background 0.15s; cursor: pointer;"
+                         onmouseover="this.style.background='#faf5ff'"
+                         onmouseout="this.style.background='transparent'"
+                         data-controller="loan-edit"
+                         data-action="click->loan-edit#openModal"
+                         data-loan-edit-id-value="{{ loan.id }}"
+                         data-loan-edit-student-value="{{ loan.student.firstName }} {{ loan.student.lastName }}"
+                         data-loan-edit-books-value="{{ loan.loanIteams|map(item => {id: item.book.id.toRfc4122, title: item.book.title, status: item.book.status.value})|json_encode|e('html_attr') }}"
+                         data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
+                         data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
+                         data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
+                         data-loan-edit-status-value="{{ loan.status.value }}">
                         {# Student Name #}
                         <span style="font-size: 13px; font-weight: 500; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             {{ loan.student.firstName }} {{ loan.student.lastName }}
                         </span>
 
-                        {# Book Title #}
-                        <span style="font-size: 13px; color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ loan.book.title }}
-                        </span>
+                        {# Books #}
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            {% for item in loan.loanIteams %}
+                                <span style="font-size: 12px; padding: 2px 8px; background: #f3f4f6; color: #374151; border-radius: 4px; white-space: nowrap;">
+                                    {{ item.book.title }}
+                                </span>
+                            {% endfor %}
+                        </div>
 
                         {# Tutor #}
                         <span style="font-size: 13px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -96,7 +122,7 @@
                         <span style="font-size: 12px; color: #374151;">
                             {{ loan.returnDate ? loan.returnDate|date('d M, Y') : '-' }}
                         </span>
-                    </a>
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -123,21 +149,36 @@
                     {% set statusText = 'Perdido' %}
                 {% endif %}
 
-                <a href="#" style="display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid #f3f4f6;"
-                   onmouseover="this.style.background='#faf5ff'"
-                   onmouseout="this.style.background='transparent'">
+                <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;"
+                     onmouseover="this.style.background='#faf5ff'"
+                     onmouseout="this.style.background='transparent'"
+                     data-controller="loan-edit"
+                     data-action="click->loan-edit#openModal"
+                     data-loan-edit-id-value="{{ loan.id }}"
+                     data-loan-edit-student-value="{{ loan.student.firstName }} {{ loan.student.lastName }}"
+                     data-loan-edit-books-value="{{ loan.loanIteams|map(item => {id: item.book.id.toRfc4122, title: item.book.title, status: item.book.status.value})|json_encode|e('html_attr') }}"
+                     data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
+                     data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
+                     data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
+                     data-loan-edit-status-value="{{ loan.status.value }}">
                     {# Student Name #}
                     <h4 style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">
                         {{ loan.student.firstName }} {{ loan.student.lastName }}
                     </h4>
 
-                    {# Book Title #}
-                    <p style="font-size: 13px; color: #6b7280; margin: 0; display: flex; align-items: center; gap: 6px;">
-                        <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {# Books #}
+                    <div style="display: flex; align-items: flex-start; gap: 6px;">
+                        <svg style="width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
-                        {{ loan.book.title }}
-                    </p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            {% for item in loan.loanIteams %}
+                                <span style="font-size: 12px; padding: 2px 8px; background: #f3f4f6; color: #374151; border-radius: 4px;">
+                                    {{ item.book.title }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
 
                     {# Tutor #}
                     <p style="font-size: 12px; color: #9ca3af; margin: 0; display: flex; align-items: center; gap: 6px;">
@@ -159,8 +200,9 @@
                             {{ loan.loanDate|date('d M') }} → {{ loan.returnDate ? loan.returnDate|date('d M') : '...' }}
                         </span>
                     </div>
-                </a>
+                </div>
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 {% endif %}

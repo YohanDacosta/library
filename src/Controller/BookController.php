@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\Services\BookCategoryService;
 use App\Services\BookService;
-use App\Services\StudentService;
 use App\Services\TutorService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class BookController extends AbstractController
 {
@@ -22,10 +22,13 @@ final class BookController extends AbstractController
     private BookService $bookService;
     private TutorService $tutorService;
 
-    public function __construct(BookService $bookService, TutorService $tutorService, StudentService $studentService)
+    private BookCategoryService $bookCategoryService;
+
+    public function __construct(BookService $bookService, TutorService $tutorService, BookCategoryService $bookCategoryService)
     {
         $this->bookService = $bookService;
         $this->tutorService = $tutorService;
+        $this->bookCategoryService = $bookCategoryService;
     }
 
     #[Route('/', name: 'app_home')]
@@ -42,14 +45,16 @@ final class BookController extends AbstractController
         }
 
         $books = $this->bookService->getBooks();
-        $books->setMaxPerPage(5);
+        $books->setMaxPerPage(12);
         $books->setCurrentPage($request->query->get('page', 1));
 
         $tutors = $this->tutorService->getTutors();
+        $bookCategories = $this->bookCategoryService->getCategories();
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'BookController',
             'books' => $books,
+            'bookCategories' => $bookCategories,
             'tutors' => $tutors,
             'categories' => self::COLORED_CATEGORIES,
             'searchTerm' => $searchTerm

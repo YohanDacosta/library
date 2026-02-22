@@ -2,20 +2,22 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Entity\Loan;
 use App\Entity\LoanIteam;
 use App\Enums\BookStatusEnum;
+use App\Enums\LoanStatusEnum;
 use App\Services\BookService;
 use App\Services\LoanService;
-use App\Services\StudentService;
 use App\Services\TutorService;
-use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Services\StudentService;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class LoanController extends AbstractController
 {
@@ -47,7 +49,7 @@ class LoanController extends AbstractController
         }
 
         $loans = $this->loanService->getLoans();
-        $loans->setMaxPerPage(2);
+        $loans->setMaxPerPage(24);
         $loans->setCurrentPage($request->query->get('page', 1));
 
 
@@ -108,6 +110,9 @@ class LoanController extends AbstractController
         }
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route("/loan/update", name: "app_loan_update", methods: ["PUT"])]
     public function updateLoan(Request $request): JsonResponse
     {
@@ -116,9 +121,15 @@ class LoanController extends AbstractController
         if (!$data) {
             return new JsonResponse(['error' => 'Datos inválidos', Response::HTTP_BAD_REQUEST]);
         }
+        $result = $this->loanService->updateLoan(
+            Uuid::fromString($data['loanId']),
+            LoanStatusEnum::tryFrom($data['status']),
+            $data['returnDate'],
+            $data['books']);
 
-
-
-        return new JsonResponse(['success' => true, 'message' => 'Préstamo creado', Response::HTTP_CREATED]);
+        if (!$result) {
+            return new JsonResponse(['error' => 'Not Found', Response::HTTP_NOT_FOUND]);
+        }
+        return new JsonResponse(['success' => true, 'message' => 'Préstamo actualizado', Response::HTTP_OK]);
     }
 }
