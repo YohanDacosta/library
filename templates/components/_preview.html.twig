@@ -53,10 +53,6 @@
                         {% set statusBg = '#dbeafe' %}
                         {% set statusColor = '#1e40af' %}
                         {% set statusText = 'Prestado' %}
-                    {% elseif book.status.value == 'reserved' %}
-                        {% set statusBg = '#fef3c7' %}
-                        {% set statusColor = '#92400e' %}
-                        {% set statusText = 'Reservado' %}
                     {% elseif book.status.value == 'repaired' %}
                         {% set statusBg = '#f3e8ff' %}
                         {% set statusColor = '#7c3aed' %}
@@ -123,10 +119,6 @@
                     {% set statusBg = '#dbeafe' %}
                     {% set statusColor = '#1e40af' %}
                     {% set statusText = 'Prestado' %}
-                {% elseif book.status.value == 'reserved' %}
-                    {% set statusBg = '#fef3c7' %}
-                    {% set statusColor = '#92400e' %}
-                    {% set statusText = 'Reservado' %}
                 {% elseif book.status.value == 'repaired' %}
                     {% set statusBg = '#f3e8ff' %}
                     {% set statusColor = '#7c3aed' %}

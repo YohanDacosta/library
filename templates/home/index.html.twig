@@ -129,18 +129,83 @@
 
         {# Filter Buttons #}
         <div class="filter-buttons" style="display: flex; gap: 8px;">
-            <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                Filtrar por categoria
-                <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-            </button>
-            <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                Mais recentes
-                <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-            </button>
+            {# Category Filter Dropdown #}
+            <div data-controller="category-filter" style="position: relative;">
+                {# Trigger Button #}
+                <button type="button"
+                        data-category-filter-target="button"
+                        data-action="click->category-filter#toggleDropdown"
+                        style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
+                    Filtrar por categoria
+                    {# Badge for active filters count #}
+                    <span data-category-filter-target="badge"
+                          style="display: none; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; background: #9333ea; color: white; font-size: 11px; font-weight: 600; border-radius: 9999px;">
+                        0
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+
+                {# Dropdown with checkboxes #}
+                <div data-category-filter-target="dropdown"
+                     style="display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); min-width: 220px; z-index: 50;">
+                    {# Categories List #}
+                    <div style="max-height: 240px; overflow-y: auto; padding: 8px 0;">
+                        {% if bookCategories is defined and bookCategories|length > 0 %}
+                            {% for category in bookCategories %}
+                            <label style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer; transition: background 0.1s;"
+                                   onmouseover="this.style.background='#f9fafb'"
+                                   onmouseout="this.style.background='transparent'">
+                                <input type="checkbox"
+                                       value="{{ category.id }}"
+                                       data-category-filter-target="checkbox"
+                                       data-action="change->category-filter#selectCategory"
+                                       style="width: 16px; height: 16px; accent-color: #9333ea; cursor: pointer;">
+                                <span style="font-size: 13px; color: #374151;">{{ category.category }}</span>
+                            </label>
+                            {% endfor %}
+                        {% else %}
+                            <div style="padding: 16px; text-align: center; color: #6b7280; font-size: 13px;">
+                                No hay categorias disponibles
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# Action Buttons #}
+                    {% if bookCategories is defined and bookCategories|length > 0 %}
+                    <div style="display: flex; gap: 8px; padding: 12px; border-top: 1px solid #e5e7eb;">
+                        <button type="button"
+                                data-action="click->category-filter#clearFilter"
+                                style="flex: 1; padding: 8px 12px; background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; color: #374151; cursor: pointer;"
+                                onmouseover="this.style.background='#f3f4f6'"
+                                onmouseout="this.style.background='white'">
+                            Limpiar
+                        </button>
+                        <button type="button"
+                                data-action="click->category-filter#applyFilter"
+                                style="flex: 1; padding: 8px 12px; background: #9333ea; border: none; border-radius: 6px; font-size: 13px; color: white; font-weight: 500; cursor: pointer;"
+                                onmouseover="this.style.background='#7c3aed'"
+                                onmouseout="this.style.background='#9333ea'">
+                            Aplicar
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Sort by Recent Toggle #}
+            <div data-controller="sort-toggle" data-sort-toggle-param-value="sort" data-sort-toggle-active-value="recent">
+                <button type="button"
+                        data-sort-toggle-target="button"
+                        data-action="click->sort-toggle#toggle"
+                        style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    Mais recentes
+                </button>
+            </div>
         </div>
     </div>
 
@@ -157,10 +222,6 @@
                 {% set statusBg = '#dbeafe' %}
                 {% set statusColor = '#1e40af' %}
                 {% set statusText = 'Prestado' %}
-            {% elseif book.status.value == 'reserved' %}
-                {% set statusBg = '#fef3c7' %}
-                {% set statusColor = '#92400e' %}
-                {% set statusText = 'Reservado' %}
             {% elseif book.status.value == 'repaired' %}
                 {% set statusBg = '#f3e8ff' %}
                 {% set statusColor = '#7c3aed' %}

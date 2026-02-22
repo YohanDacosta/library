@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Enums\LoanEnum;
+use App\Enums\LoanStatusEnum;
 use App\Repository\LoanRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: LoanRepository::class)]
 class Loan
@@ -25,8 +25,8 @@ class Loan
     #[ORM\Column]
     private ?\DateTimeImmutable $return_date = null;
 
-    #[ORM\Column(enumType: LoanEnum::class)]
-    private ?LoanEnum $status = null;
+    #[ORM\Column(enumType: LoanStatusEnum::class)]
+    private ?LoanStatusEnum $status = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -51,7 +51,7 @@ class Loan
     public function __construct()
     {
         $this->id = Uuid::v4();
-        $this->status = LoanEnum::ACTIVE;
+        $this->status = LoanStatusEnum::ACTIVE;
         $this->loan_date = new \DateTimeImmutable();
         $this->created_at = new \DateTimeImmutable();
         $this->loanIteams = new ArrayCollection();
@@ -98,12 +98,12 @@ class Loan
         return $this;
     }
 
-    public function getStatus(): ?LoanEnum
+    public function getStatus(): ?LoanStatusEnum
     {
         return $this->status;
     }
 
-    public function setStatus(LoanEnum $status): static
+    public function setStatus(LoanStatusEnum $status): static
     {
         $this->status = $status;
 
