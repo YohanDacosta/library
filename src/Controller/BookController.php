@@ -43,8 +43,8 @@ final class BookController extends AbstractController
                     'books' => $books
             ]);
         }
-
-        $books = $this->bookService->getBooks();
+        $categories = $request->query->all('categories');
+        $books = $this->bookService->getBooks($categories);
         $books->setMaxPerPage(12);
         $books->setCurrentPage($request->query->get('page', 1));
 
