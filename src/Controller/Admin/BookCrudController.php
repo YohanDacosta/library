@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -51,7 +52,7 @@ class BookCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Book')
             ->setEntityLabelInPlural('Books')
-            ->setSearchFields(['title', 'author']);
+            ->setSearchFields(['title', 'author', 'categories']);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -81,6 +82,7 @@ class BookCrudController extends AbstractCrudController
             FormField::addColumn(5)->hideOnDetail(),
             TextField::new('title'),
             TextField::new('author'),
+            AssociationField::new('categories')->setRequired(true),
             FormField::addColumn(4)->hideOnDetail(),
             TextField::new('isbn'),
             TextField::new('code', 'Barcode')

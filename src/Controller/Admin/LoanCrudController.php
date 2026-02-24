@@ -24,7 +24,6 @@ class LoanCrudController extends AbstractCrudController
             DateTimeField::new('loan_date', 'Loan Date'),
             DateTimeField::new('due_date', 'Due Date'),
             DateTimeField::new('return_date', 'Return Date'),
-            AssociationField::new('book', 'Book'),
             AssociationField::new('student', 'Student'),
             AssociationField::new('tutor', 'Tutor'),
         ];
