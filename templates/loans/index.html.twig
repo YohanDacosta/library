@@ -9,13 +9,11 @@
     /* Loans-specific styles */
     .loans-table { display: none; }
     .loans-cards { display: block; }
-    .filter-buttons { flex-wrap: wrap; justify-content: center; }
 
     /* Tablet (768px+) */
     @media (min-width: 768px) {
         .loans-table { display: block; }
         .loans-cards { display: none; }
-        .filter-buttons { justify-content: flex-end; }
     }
 
     /* Modal styles */
@@ -63,27 +61,6 @@
             ></div>
         </div>
 
-        {# Filter Buttons #}
-        <div class="filter-buttons" style="display: flex; gap: 8px;">
-            <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                Filtrar por estado
-                <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-            </button>
-            <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                Filtrar por tutor
-                <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-            </button>
-            <button type="button" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; white-space: nowrap;">
-                Más recientes
-                <svg xmlns="http://www.w3.org/2000/svg" style="height: 14px; width: 14px;" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-            </button>
-        </div>
     </div>
 
     {# Loans Table Container #}

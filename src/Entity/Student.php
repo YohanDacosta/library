@@ -13,7 +13,7 @@ class Student
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
-    private ?Uuid $id = null;
+    private Uuid|null $id = null;
 
     #[ORM\Column(length: 150)]
     private ?string $first_name = null;
@@ -30,11 +30,11 @@ class Student
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Course::class, inversedBy: 'students')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Course $course = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: School::class, inversedBy: 'students')]
     #[ORM\JoinColumn(nullable: false)]
     private ?School $school = null;
 
@@ -51,7 +51,7 @@ class Student
         $this->loan = new ArrayCollection();
     }
 
-    public function getId(): ?Uuid
+    public function getId(): Uuid|null
     {
         return $this->id;
     }
