@@ -10,8 +10,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
@@ -21,6 +24,8 @@ use Picqer\Barcode\Renderers\PngRenderer;
 use Picqer\Barcode\Types\TypeCode128;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
 
 class BookCrudController extends AbstractCrudController
 {
@@ -83,6 +88,21 @@ class BookCrudController extends AbstractCrudController
             TextField::new('title'),
             TextField::new('author'),
             AssociationField::new('categories')->setRequired(true),
+            AvatarField::new('image')
+                ->formatValue(static function ($value, Book $book) {
+                    return $book->getImageUrl();
+                })
+                ->hideOnForm(),
+            ImageField::new('image')
+                ->setBasePath('uploads/books')
+                ->setUploadDir('public/uploads/books')
+                ->setUploadedFileNamePattern('[year]-[month]-[day]-[timestamp].[extension]')
+                ->setFormTypeOptions([
+                    'attr' => [
+                        'accept' => 'image/png, image/jpeg',
+                    ],
+                ])
+                ->onlyOnForms(),
             FormField::addColumn(4)->hideOnDetail(),
             TextField::new('isbn'),
             TextField::new('code', 'Barcode')

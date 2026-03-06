@@ -21,10 +21,15 @@ class BookRepository extends ServiceEntityRepository
         parent::__construct($registry, Book::class);
     }
 
-    public function findAllBooks(array $categories = []): Pagerfanta
+    public function findAllBooks(array $categories = [], ?string $sort = null): Pagerfanta
     {
-        $query = $this->createQueryBuilder('b')
-            ->orderBy('b.created_at', 'DESC');
+        $query = $this->createQueryBuilder('b');
+
+        if ($sort === "oldest") {
+            $query->orderBy('b.created_at', 'ASC');
+        } else {
+            $query->orderBy('b.created_at', 'DESC');
+        }
 
         if (!empty($categories)) {
             $arrayCategoriesUuid = array_map(fn($id) => Uuid::fromString($id)->toBinary(), $categories);
