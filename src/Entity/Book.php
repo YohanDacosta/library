@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use App\Enums\BookStatusEnum;
 use App\Repository\BookRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Random\RandomException;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 #[UniqueEntity('code', message: 'Code already exists.')]
@@ -51,6 +52,9 @@ class Book
      */
     #[ORM\OneToMany(targetEntity: LoanIteam::class, mappedBy: 'book', orphanRemoval: true)]
     private Collection $loanIteams;
+
+    #[ORM\Column(nullable: true)]
+    public ?string $image;
 
     /**
      * @throws RandomException
@@ -126,6 +130,30 @@ class Book
     public function setCode(string $code): static
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function getImageUrl(): ?string
+    {
+        if (!$this->image) {
+            return '/images/default.jpg';
+        }
+
+        if (str_contains($this->image, '/')) {
+            return $this->image;
+        }
+        return sprintf('/uploads/books/%s', $this->image);
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }

@@ -18,9 +18,9 @@ class BookService
         $this->bookRepository = $bookRepository;
     }
 
-    public function getBooks(array $categories): Pagerfanta
+    public function getBooks(array $categories, ?string $sort): Pagerfanta
     {
-        return $this->bookRepository->findAllBooks($categories);
+        return $this->bookRepository->findAllBooks($categories, $sort);
     }
 
     public function getBookById(String $id): ?Book
