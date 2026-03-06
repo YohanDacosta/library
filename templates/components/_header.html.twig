@@ -1,5 +1,7 @@
 {# Header Component - Mobile and Desktop #}
 
+{% set tutor = app.session.get('tutor') %}
+
 {# Mobile Header #}
 <header class="mobile-header" style="background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 16px; align-items: center; justify-content: space-between;">
     <button onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; padding: 8px;">
@@ -15,43 +17,40 @@
         </div>
         <span style="font-size: 18px; font-weight: 700; color: #111827;">sp<span style="color: #9333ea;">!</span>k</span>
     </div>
-{#    <div style="width: 36px; height: 36px; border-radius: 50%; background: #f3e8ff; display: flex; align-items: center; justify-content: center;">#}
-{#        <span style="color: #9333ea; font-weight: 500; font-size: 12px;">PL</span>#}
-{#    </div>#}
+    {% if tutor %}
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: #f3e8ff; display: flex; align-items: center; justify-content: center;">
+            <span style="color: #9333ea; font-weight: 500; font-size: 11px;">{{ tutor.firstName|slice(0, 1)|upper }}{{ tutor.lastName|slice(0, 1)|upper }}</span>
+        </div>
+        <a href="/logout" style="color: #6b7280; text-decoration: none; font-size: 12px;" title="Cerrar sesión">
+            <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+        </a>
+    </div>
+    {% endif %}
 </header>
 
 {# Desktop Header #}
 <header class="desktop-header" style="background: white; border-bottom: 1px solid #e5e7eb; padding: 16px 32px; height: 73px; box-sizing: border-box;">
-{#    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 24px; height: 100%;">#}
-{#        #}{# Notification Bell #}
-{#        <button type="button" style="position: relative; color: #6b7280; background: none; border: none; cursor: pointer;" aria-label="Notifications">#}
-{#            <svg xmlns="http://www.w3.org/2000/svg" style="height: 24px; width: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
-{#                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>#}
-{#            </svg>#}
-{#            <span style="position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: #ef4444; border-radius: 50%; color: white; font-size: 10px; display: flex; align-items: center; justify-content: center;">3</span>#}
-{#        </button>#}
-
-{#        #}{# Chat Icon #}
-{#        <button type="button" style="color: #6b7280; background: none; border: none; cursor: pointer;" aria-label="Messages">#}
-{#            <svg xmlns="http://www.w3.org/2000/svg" style="height: 24px; width: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">#}
-{#                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>#}
-{#            </svg>#}
-{#        </button>#}
-
-{#        #}{# User Profile #}
-{#        <div style="display: flex; align-items: center; gap: 12px; padding-left: 24px; border-left: 1px solid #e5e7eb;">#}
-{#            <div style="width: 40px; height: 40px; border-radius: 50%; background: #f3e8ff; display: flex; align-items: center; justify-content: center;">#}
-{#                <span style="color: #9333ea; font-weight: 500; font-size: 14px;">PL</span>#}
-{#            </div>#}
-{#            <div style="text-align: right;">#}
-{#                <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">Priscilla Lily</p>#}
-{#                <p style="font-size: 12px; color: #6b7280; margin: 0;">Admin</p>#}
-{#            </div>#}
-{#            <button type="button" style="color: #9ca3af; background: none; border: none; cursor: pointer;" aria-label="User menu">#}
-{#                <svg xmlns="http://www.w3.org/2000/svg" style="height: 20px; width: 20px;" viewBox="0 0 20 20" fill="currentColor">#}
-{#                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>#}
-{#                </svg>#}
-{#            </button>#}
-{#        </div>#}
-{#    </div>#}
+    {% if tutor %}
+    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 16px; height: 100%;">
+        {# User Profile #}
+        <div style="display: flex; align-items: center; gap: 12px; padding-left: 24px; border-left: 1px solid #e5e7eb;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: #f3e8ff; display: flex; align-items: center; justify-content: center;">
+                <span style="color: #9333ea; font-weight: 500; font-size: 14px;">{{ tutor.firstName|slice(0, 1)|upper }}{{ tutor.lastName|slice(0, 1)|upper }}</span>
+            </div>
+            <div style="text-align: left;">
+                <p style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">{{ tutor.firstName }} {{ tutor.lastName }}</p>
+                <p style="font-size: 12px; color: #6b7280; margin: 0;">Tutor</p>
+            </div>
+            <a href="/logout" style="color: #6b7280; text-decoration: none; padding: 8px; margin-left: 8px; display: flex; align-items: center; gap: 6px; font-size: 13px; border-radius: 6px; transition: background-color 0.2s;" title="Cerrar sesión" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 18px; width: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span>Salir</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
 </header>

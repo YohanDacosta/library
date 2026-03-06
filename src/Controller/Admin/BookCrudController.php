@@ -57,7 +57,7 @@ class BookCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Book')
             ->setEntityLabelInPlural('Books')
-            ->setSearchFields(['title', 'author', 'categories']);
+            ->setSearchFields(['title', 'author', 'categories.category']);
     }
 
     public function configureActions(Actions $actions): Actions
