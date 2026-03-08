@@ -29,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    private ?string $password = null;
+    private string $password;
 
     #[ORM\Column(length: 100)]
     private ?string $first_name = null;
@@ -45,6 +45,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $pin_code = null;
 
     public function __construct()
     {
@@ -88,7 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_TUTOR';
 
         return array_unique($roles);
     }
@@ -191,6 +194,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setActivated(bool $activated): static
     {
         $this->activated = $activated;
+
+        return $this;
+    }
+
+    public function getPinCode(): ?string
+    {
+        return $this->pin_code;
+    }
+
+    public function setPinCode(string $pin_code): static
+    {
+        $this->pin_code = $pin_code;
 
         return $this;
     }
