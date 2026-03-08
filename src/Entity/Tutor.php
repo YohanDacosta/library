@@ -15,26 +15,11 @@ class Tutor
     #[ORM\Column(type: 'uuid', unique: true)]
     private ?Uuid $id = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $first_name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $last_name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
-
-    /**
-     * @var Collection<int, School>
-     */
-    #[ORM\ManyToMany(targetEntity: School::class, inversedBy: 'tutors')]
-    private Collection $schools;
 
     /**
      * @var Collection<int, Course>
@@ -48,12 +33,15 @@ class Tutor
     #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'tutor')]
     private Collection $loan;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->id = Uuid::v4();
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
-        $this->schools = new ArrayCollection();
         $this->courses = new ArrayCollection();
         $this->loan = new ArrayCollection();
     }
@@ -61,42 +49,6 @@ class Tutor
     public function getId(): ?Uuid
     {
         return $this->id;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->first_name;
-    }
-
-    public function setFirstName(string $first_name): static
-    {
-        $this->first_name = $first_name;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->last_name;
-    }
-
-    public function setLastName(string $last_name): static
-    {
-        $this->last_name = $last_name;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -119,30 +71,6 @@ class Tutor
     public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, School>
-     */
-    public function getSchools(): Collection
-    {
-        return $this->schools;
-    }
-
-    public function addSchool(School $school): static
-    {
-        if (!$this->schools->contains($school)) {
-            $this->schools->add($school);
-        }
-
-        return $this;
-    }
-
-    public function removeSchool(School $school): static
-    {
-        $this->schools->removeElement($school);
 
         return $this;
     }
@@ -205,8 +133,15 @@ class Tutor
     {
     }
 
-    public function __toString(): string
+    public function getUser(): ?User
     {
-        return $this->first_name . ' ' . $this->last_name ?? '';
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }
