@@ -27,6 +27,10 @@ class Course
     #[ORM\ManyToMany(targetEntity: Tutor::class, mappedBy: 'courses')]
     private Collection $tutors;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?School $school = null;
+
     public function __construct()
     {
         $this->id = Uuid::v4();
@@ -93,5 +97,17 @@ class Course
     public function __toString(): string
     {
         return $this->getName() ?? '';
+    }
+
+    public function getSchool(): ?School
+    {
+        return $this->school;
+    }
+
+    public function setSchool(?School $school): static
+    {
+        $this->school = $school;
+
+        return $this;
     }
 }
