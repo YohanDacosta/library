@@ -21,9 +21,6 @@ class Student
     #[ORM\Column(length: 255)]
     private ?string $last_name = null;
 
-    #[ORM\Column(length: 150, nullable: true)]
-    private ?string $email = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
@@ -33,10 +30,6 @@ class Student
     #[ORM\ManyToOne(targetEntity: Course::class, inversedBy: 'students')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Course $course = null;
-
-    #[ORM\ManyToOne(targetEntity: School::class, inversedBy: 'students')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?School $school = null;
 
     /**
      * @var Collection<int, Loan>
@@ -80,18 +73,6 @@ class Student
         return $this;
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -124,18 +105,6 @@ class Student
     public function setCourse(Course $course): static
     {
         $this->course = $course;
-
-        return $this;
-    }
-
-    public function getSchool(): ?School
-    {
-        return $this->school;
-    }
-
-    public function setSchool(School $school): static
-    {
-        $this->school = $school;
 
         return $this;
     }
