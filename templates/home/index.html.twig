@@ -88,7 +88,7 @@
 {% block main_content %}
 <div data-controller="book-cart"
      {% if tutors is defined %}
-     data-tutors="{{ tutors|map(t => {id: t.id, firstName: t.firstName, lastName: t.lastName})|json_encode|e('html_attr') }}"
+     data-tutors="{{ tutors|map(t => {id: t.id, firstName: t.user.firstName, lastName: t.user.lastName})|json_encode|e('html_attr') }}"
      {% endif %}>
     {# Page Title #}
     <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px;">
@@ -470,7 +470,7 @@
                         <option value="">Seleccionar tutor...</option>
                         {% if tutors is defined %}
                             {% for tutor in tutors %}
-                                <option value="{{ tutor.id }}">{{ tutor.firstName }} {{ tutor.lastName }}</option>
+                                <option value="{{ tutor.id }}">{{ tutor.user.firstName }} {{ tutor.user.lastName }}</option>
                             {% endfor %}
                         {% endif %}
                     </select>
