@@ -128,7 +128,7 @@ class BookCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        parent::persistEntity($entityManager, $entityInstance);
+        parent::updateEntity($entityManager, $entityInstance);
         $this->addFlash('success', 'Book updated!');
     }
 }
