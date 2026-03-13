@@ -142,11 +142,13 @@ export default class extends Controller {
         this.setLoading(true);
 
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
             const response = await fetch(this.createUrlValue, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify(data)
             });
