@@ -74,11 +74,14 @@ class LoanController extends AbstractController
         }
 
         try {
-            $student = $this->studentService->getStudentById($data["studentId"]);
+            $loan = new Loan();
+
+            if (!$data["isSelfLoan"]) {
+                $student = $this->studentService->getStudentById($data["studentId"]);
+                $loan->setStudent($student);
+            }
             $tutor = $this->tutorService->getTutorById($data["tutorId"]);
 
-            $loan = new Loan();
-            $loan->setStudent($student);
             $loan->setTutor($tutor);
             $loan->setLoanDate(new \DateTimeImmutable($data["loanDate"]));
             $loan->setReturnDate(new \DateTimeImmutable($data["returnDate"]));
@@ -91,7 +94,6 @@ class LoanController extends AbstractController
                 $book->setStatus(BookStatusEnum::LOANED);
             }
 
-            $loan->setStudent($student);
             $loan->setTutor($tutor);
 
             $errors = $this->validator->validate($loan);
