@@ -73,7 +73,7 @@ class LoanService
             $loan->setStatus($status);
 
             if ($returnDate) {
-                $loan->setReturnDate(new \DateTimeImmutable($returnDate));
+                $loan->setReturnDate(\DateTimeImmutable::createFromFormat('Y-m-d', $returnDate));
             }
             $loan->setUpdatedAt(new \DateTimeImmutable());
             $this->entityManager->flush();
