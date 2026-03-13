@@ -96,7 +96,7 @@ class Course
 
     public function __toString(): string
     {
-        return $this->getName() ?? '';
+        return $this->getName().' ('.$this->getSchool().')' ?? '';
     }
 
     public function getSchool(): ?School
