@@ -209,16 +209,10 @@ export default class extends Controller {
     showErrors(errors) {
         if (this.hasErrorMessageTarget) {
             this.errorMessageTarget.innerHTML = errors.map(e =>
-                `<p style="margin: 0 0 4px 0;">${this.escapeHtml(e)}</p>`
+                `<p style="margin: 0 0 4px 0;">${e}</p>`
             ).join('');
             this.errorMessageTarget.style.display = 'block';
         }
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     clearErrors() {
