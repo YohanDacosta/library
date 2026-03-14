@@ -42,7 +42,7 @@ class SchoolCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        parent::updateEntity($entityManager, $entityInstance);
+        parent::persistEntity($entityManager, $entityInstance);
         $this->addFlash('success', 'School updated!');
     }
 }

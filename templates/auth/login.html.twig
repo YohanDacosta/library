@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+    {% extends 'base.html.twig' %}
 
 {% block title %}Iniciar sesión - sp!k{% endblock %}
 
@@ -41,79 +41,47 @@
                 </h1>
             </div>
 
-            {# Already logged in message #}
-            {% if app.user %}
-            <div style="margin-bottom: 20px; padding: 12px; border-radius: 12px; text-align: center; background: rgba(255, 255, 255, 0.15);">
-                <p style="font-size: 13px; color: white; margin: 0;">
-                    Sesión activa: <strong>{{ app.user.userIdentifier }}</strong>
-                </p>
-                <a href="{{ logout_path() }}" style="font-size: 13px; color: #c084fc; margin-top: 4px; display: inline-block;">
-                    Cerrar sesión
-                </a>
-            </div>
-            {% endif %}
+            {# Title #}
+            <h2 style="font-size: 18px; font-weight: 600; color: white; text-align: center; margin: 0 0 24px 0;">
+                Iniciar sesión
+            </h2>
 
             {# Error Message #}
-            {% if error %}
+            {% if error is defined and error %}
             <div style="margin-bottom: 20px; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3);">
                 <svg xmlns="http://www.w3.org/2000/svg" style="height: 18px; width: 18px; color: #fca5a5; flex-shrink: 0;" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                 </svg>
-                <span style="font-size: 13px; color: #fecaca;">{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                <span style="font-size: 13px; color: #fecaca;">{{ error }}</span>
             </div>
             {% endif %}
 
             {# Login Form #}
-            <form method="post">
-                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-
-                {# Email Field #}
-                <div style="margin-bottom: 20px;">
-                    <label for="inputEmail" style="display: block; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        id="inputEmail"
-                        name="email"
-                        value="{{ last_username }}"
-                        autocomplete="email"
-                        required
-                        autofocus
-                        placeholder="Ingresa tu email"
-                        style="
-                            width: 100%;
-                            padding: 14px 16px;
-                            font-size: 14px;
-                            background: rgba(255, 255, 255, 0.9);
-                            border: none;
-                            border-radius: 12px;
-                            color: #374151;
-                            outline: none;
-                            box-sizing: border-box;
-                            transition: all 0.2s;
-                        "
-                        onfocus="this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(147, 51, 234, 0.3)';"
-                        onblur="this.style.background='rgba(255, 255, 255, 0.9)'; this.style.boxShadow='none';"
-                    >
-                </div>
-
-                {# Password Field #}
-                <div style="margin-bottom: 18px;">
-                    <label for="inputPassword" style="display: block; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;">
-                        Contraseña
+            <form action="/signin" method="POST" data-controller="pin-input" data-pin-input-length-value="4">
+                {# PIN Field #}
+                <div style="margin-bottom: 24px;">
+                    <label for="pin" style="display: block; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px; text-align: center;">
+                        Código PIN
                     </label>
                     <input
                         type="password"
-                        id="inputPassword"
-                        name="password"
-                        autocomplete="current-password"
+                        id="pin"
+                        name="pin"
+                        inputmode="numeric"
+                        maxlength="4"
+                        pattern="[0-9]{4}"
+                        autocomplete="off"
                         required
-                        placeholder="••••••••••••"
+                        data-pin-input-target="input"
+                        data-action="input->pin-input#onInput keydown->pin-input#onKeydown"
+                        placeholder="••••"
                         style="
                             width: 100%;
-                            padding: 14px 16px;
-                            font-size: 14px;
+                            padding: 16px;
+                            font-size: 24px;
+                            font-family: monospace;
+                            letter-spacing: 0.5em;
+                            text-align: center;
                             background: rgba(255, 255, 255, 0.9);
                             border: none;
                             border-radius: 12px;
@@ -125,11 +93,15 @@
                         onfocus="this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(147, 51, 234, 0.3)';"
                         onblur="this.style.background='rgba(255, 255, 255, 0.9)'; this.style.boxShadow='none';"
                     >
+                    <p style="margin: 8px 0 0 0; font-size: 12px; color: rgba(255, 255, 255, 0.7); text-align: center;">
+                        Ingresa tu código de 4 dígitos
+                    </p>
                 </div>
 
                 {# Submit Button #}
                 <button
                     type="submit"
+                    data-pin-input-target="submit"
                     style="
                         width: 100%;
                         padding: 14px 24px;
@@ -148,20 +120,8 @@
                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(147, 51, 234, 0.5)';"
                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(147, 51, 234, 0.4)';"
                 >
-                    Iniciar Sesión
+                    Entrar
                 </button>
-
-                {# Remember Me #}
-                <div style="margin-top: 20px; display: flex; justify-content: center;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input
-                            type="checkbox"
-                            name="_remember_me"
-                            style="width: 16px; height: 16px; accent-color: #9333ea; cursor: pointer;"
-                        >
-                        <span style="font-size: 13px; color: rgba(255, 255, 255, 0.8);">Recordar sesión</span>
-                    </label>
-                </div>
             </form>
         </div>
 

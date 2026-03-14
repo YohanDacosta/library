@@ -4,13 +4,13 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Random\RandomException;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -24,6 +24,12 @@ class User implements UserInterface
      */
     #[ORM\Column]
     private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private string $password;
 
     #[ORM\Column(length: 100)]
     private ?string $first_name = null;
@@ -40,16 +46,12 @@ class User implements UserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\Column(length: 6, unique: true)]
-    private string $pin_code;
+    #[ORM\Column(length: 255)]
+    private ?string $pin_code = null;
 
-    /**
-     * @throws RandomException
-     */
     public function __construct()
     {
         $this->id = Uuid::v4();
-        $this->pin_code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $this->activated = false;
         $this->roles = $this->getRoles();
         $this->created_at = new \DateTimeImmutable("now");
@@ -105,12 +107,27 @@ class User implements UserInterface
     }
 
     /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
     public function __serialize(): array
     {
         $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->pin_code);
+        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
         return $data;
     }
@@ -191,10 +208,5 @@ class User implements UserInterface
         $this->pin_code = $pin_code;
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getEmail();
     }
 }
