@@ -83,19 +83,15 @@
                          data-controller="loan-edit"
                          data-action="click->loan-edit#openModal"
                          data-loan-edit-id-value="{{ loan.id }}"
-                         data-loan-edit-student-value="{{ loan.student ? loan.student.firstName ~ ' ' ~ loan.student.lastName : 'Auto-préstamo' }}"
+                         data-loan-edit-student-value="{{ loan.student.firstName }} {{ loan.student.lastName }}"
                          data-loan-edit-books-value="{{ loan.loanIteams|map(item => {id: item.book.id.toRfc4122, title: item.book.title, status: item.book.status.value})|json_encode|e('html_attr') }}"
-                         data-loan-edit-tutor-value="{{ loan.tutor.user.firstName }} {{ loan.tutor.user.lastName }}"
+                         data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
                          data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
                          data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
                          data-loan-edit-status-value="{{ loan.status.value }}">
                         {# Student Name #}
                         <span style="font-size: 13px; font-weight: 500; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {% if loan.student %}
-                                {{ loan.student.firstName }} {{ loan.student.lastName }}
-                            {% else %}
-                                <span style="color: #9333ea; font-style: italic;">Auto-préstamo</span>
-                            {% endif %}
+                            {{ loan.student.firstName }} {{ loan.student.lastName }}
                         </span>
 
                         {# Books #}
@@ -109,7 +105,7 @@
 
                         {# Tutor #}
                         <span style="font-size: 13px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ loan.tutor.user.firstName }}
+                            {{ loan.tutor.firstName }}
                         </span>
 
                         {# Status Badge #}
@@ -159,19 +155,15 @@
                      data-controller="loan-edit"
                      data-action="click->loan-edit#openModal"
                      data-loan-edit-id-value="{{ loan.id }}"
-                     data-loan-edit-student-value="{{ loan.student ? loan.student.firstName ~ ' ' ~ loan.student.lastName : 'Auto-préstamo' }}"
+                     data-loan-edit-student-value="{{ loan.student.firstName }} {{ loan.student.lastName }}"
                      data-loan-edit-books-value="{{ loan.loanIteams|map(item => {id: item.book.id.toRfc4122, title: item.book.title, status: item.book.status.value})|json_encode|e('html_attr') }}"
-                     data-loan-edit-tutor-value="{{ loan.tutor.user.firstName }} {{ loan.tutor.user.lastName }}"
+                     data-loan-edit-tutor-value="{{ loan.tutor.firstName }} {{ loan.tutor.lastName }}"
                      data-loan-edit-loan-date-value="{{ loan.loanDate|date('Y-m-d') }}"
                      data-loan-edit-return-date-value="{{ loan.returnDate ? loan.returnDate|date('Y-m-d') : '' }}"
                      data-loan-edit-status-value="{{ loan.status.value }}">
                     {# Student Name #}
                     <h4 style="font-size: 14px; font-weight: 500; color: #111827; margin: 0;">
-                        {% if loan.student %}
-                            {{ loan.student.firstName }} {{ loan.student.lastName }}
-                        {% else %}
-                            <span style="color: #9333ea; font-style: italic;">Auto-préstamo</span>
-                        {% endif %}
+                        {{ loan.student.firstName }} {{ loan.student.lastName }}
                     </h4>
 
                     {# Books #}
@@ -193,7 +185,7 @@
                         <svg style="width: 14px; height: 14px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
-                        Tutor: {{ loan.tutor.user.firstName }}
+                        Tutor: {{ loan.tutor.firstName }}
                     </p>
 
                     {# Status and Dates row #}

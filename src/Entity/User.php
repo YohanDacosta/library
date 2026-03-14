@@ -34,9 +34,6 @@ class User implements UserInterface
     #[ORM\Column]
     private ?bool $activated = null;
 
-    #[ORM\OneToOne(targetEntity: Tutor::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private ?Tutor $tutor = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 

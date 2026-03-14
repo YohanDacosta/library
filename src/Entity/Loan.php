@@ -35,7 +35,7 @@ class Loan
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'loan')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Student $student = null;
 
     #[ORM\ManyToOne(inversedBy: 'loan')]

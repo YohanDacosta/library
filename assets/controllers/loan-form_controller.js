@@ -4,7 +4,7 @@ const BOOK_CART_STORAGE_KEY = 'library_book_cart';
 const TUTOR_STORAGE_KEY = 'library_selected_tutor';
 
 export default class extends Controller {
-    static targets = ['tutor', 'student', 'loanDate', 'returnDate', 'submitBtn', 'errorMessage', 'booksList', 'selfLoan'];
+    static targets = ['tutor', 'student', 'loanDate', 'returnDate', 'submitBtn', 'errorMessage', 'booksList'];
     static values = {
         studentsUrl: String,
         createUrl: String
@@ -41,32 +41,9 @@ export default class extends Controller {
         return date.toISOString().split('T')[0];
     }
 
-    toggleSelfLoan() {
-        const isChecked = this.selfLoanTarget.checked;
-
-        if (isChecked) {
-            // Disable and clear student select
-            this.studentTarget.disabled = true;
-            this.studentTarget.value = '';
-            this.studentTarget.style.opacity = '0.5';
-        } else {
-            // Re-enable if tutor is selected
-            if (this.tutorTarget.value) {
-                this.studentTarget.disabled = false;
-                this.studentTarget.style.opacity = '1';
-            }
-        }
-    }
-
     async filterStudents() {
         const tutorId = this.tutorTarget.value;
         const studentSelect = this.studentTarget;
-
-        // Reset self-loan checkbox when tutor changes
-        if (this.hasSelfLoanTarget) {
-            this.selfLoanTarget.checked = false;
-            studentSelect.style.opacity = '1';
-        }
 
         if (!tutorId) {
             studentSelect.innerHTML = '<option value="">Primero seleccione un tutor...</option>';
@@ -127,15 +104,12 @@ export default class extends Controller {
         }
 
         // Prepare data
-        const isSelfLoan = this.hasSelfLoanTarget && this.selfLoanTarget.checked;
-
         const data = {
             tutorId: this.tutorTarget.value,
-            studentId: isSelfLoan ? null : this.studentTarget.value,
+            studentId: this.studentTarget.value,
             bookIds: books.map(b => b.id),
             loanDate: this.loanDateTarget.value,
-            returnDate: this.returnDateTarget.value,
-            isSelfLoan: isSelfLoan
+            returnDate: this.returnDateTarget.value
         };
 
         // Show loading state
@@ -176,13 +150,9 @@ export default class extends Controller {
         if (!this.tutorTarget.value) {
             errors.push('Debe seleccionar un tutor');
         }
-
-        // Only validate student if NOT a self-loan
-        const isSelfLoan = this.hasSelfLoanTarget && this.selfLoanTarget.checked;
-        if (!isSelfLoan && !this.studentTarget.value) {
+        if (!this.studentTarget.value) {
             errors.push('Debe seleccionar un estudiante');
         }
-
         if (books.length === 0) {
             errors.push('Debe seleccionar al menos un libro');
         }
@@ -250,9 +220,7 @@ export default class extends Controller {
         if (this.hasStudentTarget) {
             this.studentTarget.innerHTML = '<option value="">Primero seleccione un tutor...</option>';
             this.studentTarget.disabled = true;
-            this.studentTarget.style.opacity = '1';
         }
-        if (this.hasSelfLoanTarget) this.selfLoanTarget.checked = false;
         if (this.hasBooksListTarget) this.booksListTarget.innerHTML = '';
 
         // Reset dates to defaults

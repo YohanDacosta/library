@@ -37,12 +37,6 @@ class Tutor
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    /**
-     * @var Collection<int, Course>
-     */
-    #[ORM\ManyToMany(targetEntity: Course::class)]
-    private Collection $course;
-
     public function __construct()
     {
         $this->id = Uuid::v4();
@@ -50,7 +44,6 @@ class Tutor
         $this->updated_at = new \DateTimeImmutable();
         $this->courses = new ArrayCollection();
         $this->loan = new ArrayCollection();
-        $this->course = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -150,18 +143,5 @@ class Tutor
         $this->user = $user;
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, Course>
-     */
-    public function getCourse(): Collection
-    {
-        return $this->course;
-    }
-
-    public function __toString(): string
-    {
-       return $this->user->getEmail();
     }
 }

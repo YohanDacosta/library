@@ -11,7 +11,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 
 class StudentCrudController extends AbstractCrudController
@@ -33,23 +32,15 @@ class StudentCrudController extends AbstractCrudController
     {
         return [
             FormField::addColumn(5),
-            IdField::new('id')
-                ->onlyOnIndex(),
+            IdField::new('id')->onlyOnIndex(),
             TextField::new('first_name'),
             TextField::new('last_name'),
+            TextField::new('email'),
             FormField::addColumn(3),
-            DateTimeField::new('created_at')
-                ->onlyOnIndex(),
-            DateTimeField::new('updated_at')
-                ->onlyOnForms()
-                ->onlyWhenUpdating(),
-            AssociationField::new('course')
-                ->setRequired(true)
-                ->setFormTypeOption('constraints', [
-                    new NotNull([
-                        'message' => 'Debe seleccionar un curso'
-                    ])
-                ]),
+            DateTimeField::new('created_at')->onlyOnIndex(),
+            DateTimeField::new('updated_at')->onlyOnForms()->onlyWhenUpdating(),
+            AssociationField::new('course'),
+            AssociationField::new('school'),
         ];
     }
 
