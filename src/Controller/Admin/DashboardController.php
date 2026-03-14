@@ -2,14 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Book;
-use App\Entity\BookCategory;
-use App\Entity\Course;
-use App\Entity\Loan;
-use App\Entity\School;
-use App\Entity\Student;
-use App\Entity\Tutor;
-use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
