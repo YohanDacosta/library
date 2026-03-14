@@ -6,9 +6,11 @@ use App\Entity\Course;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class CourseCrudController extends AbstractCrudController
 {
@@ -23,6 +25,12 @@ class CourseCrudController extends AbstractCrudController
             IdField::new('id')->onlyOnIndex(),
             TextField::new('name'),
             DateTimeField::new('created_at')->hideOnForm(),
+            AssociationField::new('school')->setRequired(true)
+                ->setFormTypeOption('constraints', [
+                    new NotNull([
+                        'message' => 'Debe seleccionar una escuela'
+                    ])
+                ]),
         ];
     }
 
