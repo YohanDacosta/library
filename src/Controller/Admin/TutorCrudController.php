@@ -33,7 +33,7 @@ class TutorCrudController extends AbstractCrudController
                 ->setFormTypeOption('query_builder', function ($er) {
                     return $er->createQueryBuilder('u')->leftJoin('u.tutor', 't')->where('t.id IS NULL');
                 }),
-            AssociationField::new('course'),
+            AssociationField::new('courses'),
             DateTimeField::new('created_at')
                 ->onlyOnIndex(),
         ];
