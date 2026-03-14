@@ -1,7 +1,46 @@
 version: '3.7'
 
 services:
+    db:
+        image: mariadb:10.11.2
+        working_dir: /application
+        command:
+          [
+              mysqld,
+              --character-set-server=utf8mb4,
+              --collation-server=utf8mb4_unicode_ci,
+              --innodb-file-format=Barracuda,
+              --innodb-large-prefix=1,
+              --innodb-file-per-table=1,
+          ]
+        ports:
+            - "33406:3306"
+        environment:
+            MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+            MARIADB_DATABASE: ${MARIADB_DATABASE}
+            MARIADB_USER: ${MARIADB_USER}
+            MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+        networks:
+            - symfony-template
+
     web:
-        image: richarvey/nginx-php-fpm
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+             - .:/var/www/html/library:rw
+             - .docker/nginx.conf:/etc/nginx/sites-available/default.conf
         ports:
             -   "8080:80"
+        environment:
+            APP_ENV: dev
+            APP_SECRET: ${APP_SECRET}
+            DATABASE_URL: ${DATABASE_URL}
+
+        networks:
+            - symfony-template
+        depends_on:
+            - db
+
+networks:
+    symfony-template:
