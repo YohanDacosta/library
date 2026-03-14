@@ -2,6 +2,14 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Book;
+use App\Entity\Loan;
+use App\Entity\User;
+use App\Entity\Tutor;
+use App\Entity\Course;
+use App\Entity\School;
+use App\Entity\Student;
+use App\Entity\BookCategory;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -29,16 +37,18 @@ class DashboardController extends AbstractDashboardController
     {
         return [
             MenuItem::section('Library'),
-            MenuItem::linkTo(BookCrudController::class,'Books', 'fas fa-book'),
-            MenuItem::linkTo(BookCategoryCrudController::class, 'Category Books', 'fas fa-tags'),
-            MenuItem::linkTo(LoanCrudController::class, 'Loans', 'fa fa-clock-o'),
+            MenuItem::linkToCrud('Books', 'fas fa-book', Book::class),
+            MenuItem::linkToCrud('Category Books', 'fas fa-tags', BookCategory::class),
+            MenuItem::linkToCrud('Loans', 'fa fa-clock-o', Loan::class),
+
             MenuItem::section('Academic'),
-            MenuItem::linkTo(StudentCrudController::class, 'Students', 'fas fa-graduation-cap'),
-            MenuItem::linkTo(CourseCrudController::class, 'Courses', 'fas fa-file'),
-            MenuItem::linkTo(SchoolCrudController::class, 'Schools', 'fas fa-school'),
-            MenuItem::linkTo(TutorCrudController::class, 'Tutors', 'fa fa-chalkboard-user'),
+            MenuItem::linkToCrud('Students', 'fas fa-graduation-cap', Student::class),
+            MenuItem::linkToCrud('Courses', 'fas fa-file', Course::class),
+            MenuItem::linkToCrud('Schools', 'fas fa-school', School::class),
+            MenuItem::linkToCrud('Tutors', 'fa fa-chalkboard-user', Tutor::class),
+
             MenuItem::section('Administration'),
-            MenuItem::linkTo(UserCrudController::class, 'Users', 'fa fa-users')
+            MenuItem::linkToCrud('Users', 'fa fa-users', User::class),
         ];
     }
 }

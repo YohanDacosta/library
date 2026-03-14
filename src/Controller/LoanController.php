@@ -11,6 +11,9 @@ use App\Services\BookService;
 use App\Services\LoanService;
 use App\Services\TutorService;
 use App\Services\StudentService;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,13 +29,26 @@ class LoanController extends AbstractController
     private StudentService $studentService;
     private TutorService $tutorService;
     private ValidatorInterface $validator;
-    public function __construct(LoanService $loanService, BookService $bookService, StudentService $studentService, TutorService $tutorService, ValidatorInterface $validator)
+
+    private LoggerInterface $logger;
+
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    public function __construct(
+        LoanService $loanService,
+        BookService $bookService,
+        StudentService $studentService,
+        TutorService $tutorService,
+        ValidatorInterface $validator,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        LoggerInterface $logger
+    )
     {
         $this->loanService = $loanService;
         $this->bookService = $bookService;
         $this->studentService = $studentService;
         $this->tutorService = $tutorService;
         $this->validator = $validator;
+        $this->csrfTokenManager = $csrfTokenManager;
     }
 
     #[Route('/loan', name: 'app_loan')]
@@ -67,6 +83,11 @@ class LoanController extends AbstractController
     #[Route("/loan/create", name: "app_loan_create", methods: ["POST"])]
     public function createLoan(Request $request): JsonResponse
     {
+        $csrfToken = $request->headers->get('x-csrf-token');
+
+        if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('loan_form', $csrfToken))) {
+            return new JsonResponse(['error' => 'Invalid CSRF token', Response::HTTP_FORBIDDEN]);
+        }
         $data = json_decode($request->getContent(), true);
 
         if (!$data) {
@@ -78,20 +99,30 @@ class LoanController extends AbstractController
 
             if (!$data["isSelfLoan"]) {
                 $student = $this->studentService->getStudentById($data["studentId"]);
+
+                if (!$student) {
+                    return new JsonResponse(['error' => 'Estudiante no encontrado', Response::HTTP_NOT_FOUND]);
+                }
                 $loan->setStudent($student);
             }
             $tutor = $this->tutorService->getTutorById($data["tutorId"]);
 
+            if (!$tutor) {
+                return new JsonResponse(['error' => 'Tutor no encontrado', Response::HTTP_NOT_FOUND]);
+            }
+
             $loan->setTutor($tutor);
-            $loan->setLoanDate(new \DateTimeImmutable($data["loanDate"]));
-            $loan->setReturnDate(new \DateTimeImmutable($data["returnDate"]));
+            $loan->setLoanDate(\DateTimeImmutable::createFromFormat('Y-m-d', $data["loanDate"]));
+            $loan->setReturnDate(\DateTimeImmutable::createFromFormat('Y-m-d', $data["returnDate"]));
 
             foreach ($data["bookIds"] as $bookId) {
                 $book = $this->bookService->getBookById($bookId);
-                $loanItemBook = new LoanIteam();
-                $loanItemBook->setBook($book);
-                $loan->addLoanIteam($loanItemBook);
-                $book->setStatus(BookStatusEnum::LOANED);
+                if ($book) {
+                    $loanItemBook = new LoanIteam();
+                    $loanItemBook->setBook($book);
+                    $loan->addLoanIteam($loanItemBook);
+                    $book->setStatus(BookStatusEnum::LOANED);
+                }
             }
 
             $loan->setTutor($tutor);
@@ -108,7 +139,14 @@ class LoanController extends AbstractController
 
             return new JsonResponse(['success' => true, 'message' => 'Préstamo creado', Response::HTTP_CREATED]);
         } catch (Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR]);
+            $this->logger->error(
+                'Error al procesar la solicitud',
+                [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]
+            );
+            return new JsonResponse(['error' => 'Error al procesar la solicitud', Response::HTTP_INTERNAL_SERVER_ERROR]);
         }
     }
 
@@ -118,11 +156,17 @@ class LoanController extends AbstractController
     #[Route("/loan/update", name: "app_loan_update", methods: ["PUT"])]
     public function updateLoan(Request $request): JsonResponse
     {
+        $csrfToken = $request->headers->get('x-csrf-token');
+
+        if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('loan_form', $csrfToken))) {
+            return new JsonResponse('Invalid CSRF token', Response::HTTP_FORBIDDEN);
+        }
         $data = json_decode($request->getContent(), true);
 
         if (!$data) {
             return new JsonResponse(['error' => 'Datos inválidos', Response::HTTP_BAD_REQUEST]);
         }
+
         $result = $this->loanService->updateLoan(
             Uuid::fromString($data['loanId']),
             LoanStatusEnum::tryFrom($data['status']),
